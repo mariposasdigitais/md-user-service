@@ -11,9 +11,6 @@ micronaut:
       swagger-ui:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
-#  security:
-#    authentication: idtoken
-#jpa.default.properties.hibernate.hbm2ddl.auto: update
 
 endpoints:
   health:
@@ -43,3 +40,9 @@ jpa:
       format_sql: true
       current_session_context_class: thread
       dialect: org.hibernate.dialect.PostgreSQL95Dialect
+
+aws:
+  cognito:
+    userPoolId: us-east-1_EZq6amARk
+    clientId: 77ae69a0o2dh1hfbsp391h2214
+    region: us-east-1

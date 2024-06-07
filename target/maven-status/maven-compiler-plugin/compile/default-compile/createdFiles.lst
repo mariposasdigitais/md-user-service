@@ -43,7 +43,6 @@ mariposas\config\$AwsCognitoConfig$CognitoIdentityProviderClient0$Definition.cla
 mariposas\controller\UserApi.class
 mariposas\model\$UserEntity$ReflectConfig.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$LoginResponseModel$Introspection
-mariposas\service\AwsBucketService.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$UserModel$Introspection
 mariposas\model\$UserEntity$UserEntityBuilder$ReflectConfig.class
 META-INF\micronaut\io.micronaut.core.graal.GraalReflectionConfigurer\mariposas.model.$MentorsEntity$MentorsEntityBuilder$ReflectConfig
