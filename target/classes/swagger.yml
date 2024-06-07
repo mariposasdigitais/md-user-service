@@ -1,0 +1,214 @@
+openapi: 3.0.3
+
+info:
+  title: md-user-service
+  description: Microsserviço responsável por gerir todas as ações relacionadas a um usuário.
+  version: 1.0.11
+
+tags:
+  - name: User
+
+paths:
+  /user:
+    post:
+      tags:
+        - User
+      summary: Create user
+      operationId: createUser
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserModel'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Login
+      operationId: login
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginModel'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /user/profile/mentee:
+    post:
+      tags:
+        - User
+      summary: Complete mentee profile
+      operationId: menteeProfile
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenteeProfileModel'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /user/profile/mentor:
+    post:
+      tags:
+        - User
+      summary: Complete mentor profile
+      operationId: mentorProfile
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MentorProfileModel'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+components:
+  parameters:
+    token:
+      name: token
+      in: header
+      required: true
+      schema:
+        type: string
+  schemas:
+    UserModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        password:
+          type: string
+          example: m4ria3ug3ni4
+        phone:
+          type: string
+          example: 31995236485
+        isMentor:
+          enum:
+            - 1
+            - 2
+    LoginModel:
+      properties:
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        password:
+          type: string
+          example: m4ria3ug3ni4
+    MenteeProfileModel:
+      properties:
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+        isSponsored:
+          type: boolean
+        age:
+          type: string
+          example: 24
+        menteeLevel:
+          enum:
+            - 1
+            - 2
+    MentorProfileModel:
+      properties:
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        education:
+          type: string
+          example: Bacharelado em Sistemas de Informação
+        age:
+          type: string
+          example: 24
+        mentoringCapacity:
+          enum:
+            - 1
+            - 2
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+    ResponseModel:
+      type: object
+      properties:
+        mensagem:
+          type: string
+        status:
+          type: number
+    LoginResponseModel:
+      type: object
+      properties:
+        mensagem:
+          type: string
+        status:
+          type: number
+        token:
+          type: string

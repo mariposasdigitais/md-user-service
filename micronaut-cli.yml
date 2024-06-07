@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: mariposas
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [amazon-cognito, app-name, aws-parameter-store, aws-secrets-manager, aws-v2-sdk, data, data-jpa, hibernate-jpa, hibernate-validator, http-client, java, java-application, jdbc-hikari, junit, logback, lombok, maven, maven-enforcer-plugin, micronaut-aot, micronaut-http-validation, mockito, netty-server, openapi, postgres, readme, security-annotations, security-jwt, security-oauth2, serialization-jackson, shade, static-resources, swagger-ui, test-resources, yaml, yaml-build]

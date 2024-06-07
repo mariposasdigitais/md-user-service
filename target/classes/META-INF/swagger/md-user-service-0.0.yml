@@ -1,0 +1,252 @@
+openapi: 3.0.1
+info:
+  title: md-user-service
+  version: "0.0"
+tags:
+- name: User
+  description: The User API
+paths:
+  /api/md-user-service/v1/user:
+    post:
+      tags:
+      - User
+      summary: Create user
+      description: Create user
+      operationId: createUser
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserModel"
+        required: true
+      responses:
+        "200":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseModel"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+  /api/md-user-service/v1/user/login:
+    post:
+      tags:
+      - User
+      summary: Login
+      description: Login
+      operationId: login
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginModel"
+        required: true
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponseModel"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+  /api/md-user-service/v1/user/profile/mentee:
+    post:
+      tags:
+      - User
+      summary: Complete mentee profile
+      description: Complete mentee profile
+      operationId: menteeProfile
+      parameters:
+      - name: token
+        in: header
+        description: (required)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenteeProfileModel"
+        required: true
+      responses:
+        "200":
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseModel"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+  /api/md-user-service/v1/user/profile/mentor:
+    post:
+      tags:
+      - User
+      summary: Complete mentor profile
+      description: Complete mentor profile
+      operationId: mentorProfile
+      parameters:
+      - name: token
+        in: header
+        description: (required)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MentorProfileModel"
+        required: true
+      responses:
+        "200":
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseModel"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+components:
+  schemas:
+    LoginModel:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+          example: mariaeugenia@email.com
+        password:
+          type: string
+          nullable: true
+          example: m4ria3ug3ni4
+      description: LoginModel
+    LoginResponseModel:
+      type: object
+      properties:
+        mensagem:
+          type: string
+          nullable: true
+        status:
+          type: number
+          nullable: true
+        token:
+          type: string
+          nullable: true
+      description: LoginResponseModel
+    MenteeProfileModel:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+          example: mariaeugenia@email.com
+        profile:
+          type: string
+          nullable: true
+          example: "Olá, sou a Maria Eugênia [...]"
+        isSponsored:
+          type: boolean
+          nullable: true
+        age:
+          type: string
+          nullable: true
+          example: "24"
+        menteeLevel:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/UserModelIsMentor"
+      description: MenteeProfileModel
+    MentorProfileModel:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+          example: mariaeugenia@email.com
+        education:
+          type: string
+          nullable: true
+          example: Bacharelado em Sistemas de Informação
+        age:
+          type: string
+          nullable: true
+          example: "24"
+        mentoringCapacity:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/UserModelIsMentor"
+        profile:
+          type: string
+          nullable: true
+          example: "Olá, sou a Maria Eugênia [...]"
+      description: MentorProfileModel
+    ResponseModel:
+      type: object
+      properties:
+        mensagem:
+          type: string
+          nullable: true
+        status:
+          type: number
+          nullable: true
+      description: ResponseModel
+    UserModel:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          nullable: true
+          example: mariaeugenia@email.com
+        password:
+          type: string
+          nullable: true
+          example: m4ria3ug3ni4
+        phone:
+          type: string
+          nullable: true
+          example: "31995236485"
+        isMentor:
+          nullable: true
+          allOf:
+          - $ref: "#/components/schemas/UserModelIsMentor"
+      description: UserModel
+    UserModelIsMentor:
+      type: number
+      description: Gets or Sets UserModel_isMentor
+      enum:
+      - 1
+      - 2
