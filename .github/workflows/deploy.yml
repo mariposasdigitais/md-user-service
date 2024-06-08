@@ -39,7 +39,7 @@ jobs:
       
       - uses: actions/setup-java@v4
           with:
-          java-version: '22'
+            java-version: '22'
 
       - name: Generate jar file
         run: mvn clean package
