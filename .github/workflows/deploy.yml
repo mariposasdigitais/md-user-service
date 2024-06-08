@@ -38,8 +38,8 @@ jobs:
         run: gcloud auth configure-docker us-east1-docker.pkg.dev
       
       - uses: actions/setup-java@v4
-          with:
-            java-version: '22'
+        with:
+          java-version: '22'
 
       - name: Generate jar file
         run: mvn clean package
