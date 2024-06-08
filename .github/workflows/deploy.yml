@@ -58,3 +58,6 @@ jobs:
           region: us-east1
           platform: managed
           allow-unauthenticated: true
+          env_vars: |-
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
