@@ -1,0 +1,59 @@
+name: Deploy
+
+env:
+  GH_REF: ${{ github.event.inputs.ref }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'a specific branch, commit or tag'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GH_REF }}
+
+      - name: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
+      - name: Configure docker for GCP
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev
+      
+      - uses: actions/setup-java@v4
+          with:
+          java-version: '22'
+
+      - name: Generate jar file
+        run: mvn clean package
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t "us-east1-docker.pkg.dev/mariposas-digitais/mariposas-digitais-back/mariposas-digitais-back:${{ env.GH_REF }}" .
+          docker push "us-east1-docker.pkg.dev/mariposas-digitais/mariposas-digitais-back/mariposas-digitais-back:${{ env.GH_REF }}"
+      
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@main
+        with:
+          image: us-east1-docker.pkg.dev/mariposas-digitais/mariposas-digitais-front/mariposas-digitais-back:${{ env.GH_REF }}
+          service: mariposas-digitais-back
+          region: us-east1
+          platform: managed
+          allow-unauthenticated: true
