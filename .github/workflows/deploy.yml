@@ -36,12 +36,12 @@ jobs:
 
       - name: Configure docker for GCP
         run: gcloud auth configure-docker us-east1-docker.pkg.dev
-      
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '22'
 
       - name: Generate jar file
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
         run: mvn clean package
 
       - name: Build and push Docker image
