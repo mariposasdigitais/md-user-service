@@ -16,6 +16,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.convert.format.Format;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
+import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
@@ -67,6 +68,31 @@ public interface UserApi {
     );
 
     /**
+     * {@summary Request password reset link}
+     *
+     * @param token JWT User Access Token (required)
+     * @param forgotPasswordModel (optional)
+     * @return ResponseModel
+     */
+    @Operation(
+        operationId = "forgotPassword",
+        summary = "Request password reset link",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Password recovery request sent successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseModel.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+        }
+    )
+    @Post("/user/password/forgot")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    ResponseModel forgotPassword(
+        @Header("token") @NotNull String token,
+        @Body @Nullable(inherited = true) @Valid ForgotPasswordModel forgotPasswordModel
+    );
+
+    /**
      * {@summary Obtain a list of mentees available for sponsorship}
      *
      * @param token JWT User Access Token (required)
@@ -79,7 +105,7 @@ public interface UserApi {
         operationId = "getMenteesList",
         summary = "Obtain a list of mentees available for sponsorship",
         responses = {
-            @ApiResponse(responseCode = "200", description = "List of mentees", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PaginatedMentees.class))),
+            @ApiResponse(responseCode = "200", description = "List of mentees successfully returned", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PaginatedMentees.class))),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Not found"),
             @ApiResponse(responseCode = "422", description = "Unprocessable Entity"),

@@ -16,7 +16,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserModel"
-        required: true
       responses:
         "200":
           description: User created successfully
@@ -45,7 +44,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/LoginModel"
-        required: true
       responses:
         "200":
           description: Login successful
@@ -69,38 +67,6 @@ paths:
       description: Obtain a list of mentees available for sponsorship
       operationId: getMenteesList
       parameters:
-      - name: limit
-        in: query
-        description: "Number of records per page (optional, default to 2)"
-        schema:
-          oneOf:
-          - allOf:
-            - type: integer
-              format: int32
-              nullable: true
-              default: 2
-          - allOf:
-            - minimum: 2
-              type: integer
-              format: int32
-              nullable: true
-              default: 2
-      - name: page
-        in: query
-        description: "Current page (optional, default to 1)"
-        schema:
-          oneOf:
-          - allOf:
-            - type: integer
-              format: int32
-              nullable: true
-              default: 1
-          - allOf:
-            - minimum: 1
-              type: integer
-              format: int32
-              nullable: true
-              default: 1
       - name: token
         in: header
         description: JWT User Access Token (required)
@@ -113,13 +79,66 @@ paths:
         required: true
         schema:
           type: string
+      - name: limit
+        in: query
+        description: "Number of records per page (optional, default to 2)"
+        schema:
+          minimum: 2
+          type: integer
+          format: int32
+          nullable: true
+          default: 2
+      - name: page
+        in: query
+        description: "Current page (optional, default to 1)"
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+          nullable: true
+          default: 1
       responses:
         "200":
-          description: List of mentees
+          description: List of mentees successfully returned
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedMentees"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+  /api/md-user-service/v1/user/password/forgot:
+    post:
+      tags:
+      - User
+      summary: Request password reset link
+      description: Request password reset link
+      operationId: forgotPassword
+      parameters:
+      - name: token
+        in: header
+        description: JWT User Access Token (required)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordModel"
+      responses:
+        "200":
+          description: Password recovery request sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseModel"
         "400":
           description: Bad request
         "404":
@@ -148,7 +167,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/MenteeProfileModel"
-        required: true
       responses:
         "200":
           description: Profile updated successfully
@@ -184,7 +202,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/MentorProfileModel"
-        required: true
       responses:
         "200":
           description: Profile updated successfully
@@ -202,6 +219,13 @@ paths:
           description: Internal Server Error
 components:
   schemas:
+    ForgotPasswordModel:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+      description: ForgotPasswordModel
     LoginModel:
       type: object
       properties:
@@ -367,7 +391,6 @@ components:
           example: "31995236485"
         image:
           type: string
-          format: binary
           nullable: true
         isMentor:
           nullable: true

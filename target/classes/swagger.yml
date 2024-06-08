@@ -138,11 +138,41 @@ paths:
         - $ref: '#/components/parameters/email'
       responses:
         '200':
-          description: List of mentees
+          description: List of mentees successfully returned
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedMentees'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /user/password/forgot:
+    post:
+      tags:
+        - User
+      summary: Request password reset link
+      operationId: forgotPassword
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordModel'
+      responses:
+        '200':
+          description: Password recovery request sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
         '400':
           description: Bad request
         '404':
@@ -211,7 +241,6 @@ components:
           example: 31995236485
         image:
           type: string
-          format: binary
         isMentor:
           enum:
             - 1
@@ -314,6 +343,12 @@ components:
           type: string
         status:
           type: number
+
+    ForgotPasswordModel:
+      type: object
+      properties:
+        email:
+          type: string
 
     LoginResponseModel:
       type: object

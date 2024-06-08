@@ -7,6 +7,7 @@ mariposas\model\UserEntity$UserEntityBuilder.class
 mariposas\model\$MenteesModel$Introspection.class
 mariposas\service\JwtAuthenticationService.class
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.repository.$MenteesRepository$Intercepted$Definition
+mariposas\model\ForgotPasswordModel.class
 META-INF\swagger\views\swagger-ui\res\swagger-ui-bundle.js
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.repository.$MentorsRepository$Intercepted$Definition
 META-INF\swagger\views\swagger-ui\res\favicon-32x32.png
@@ -64,7 +65,9 @@ mariposas\service\impl\UserServiceImpl.class
 META-INF\swagger\views\swagger-ui\res\favicon-16x16.png
 mariposas\controller\$UserController$Definition$Exec.class
 META-INF\swagger\md-user-service-0.0.yml
+mariposas\model\$ForgotPasswordModel$Introspection.class
 mariposas\model\LoginResponseModel.class
+META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$ForgotPasswordModel$Introspection
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.config.$AwsCognitoConfig$CognitoIdentityProviderClient0$Definition
 mariposas\model\$MenteeProfileModel$Introspection.class
 mariposas\model\ResponseModel.class

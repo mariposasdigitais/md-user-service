@@ -6,6 +6,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import jakarta.inject.Singleton;
 import mariposas.exception.BaseException;
+import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
@@ -27,8 +28,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static mariposas.constant.AppConstant.FORGOT_PASSWORD_SUCCESS;
 import static mariposas.constant.AppConstant.LOGIN_SUCCESS;
-import static mariposas.constant.AppConstant.PROFILE_SUCESS;
+import static mariposas.constant.AppConstant.PROFILE_SUCCESS;
 import static mariposas.constant.AppConstant.USER_ALREADY_EXISTS;
 import static mariposas.constant.AppConstant.USER_CREATED;
 import static mariposas.constant.AppConstant.USER_NOT_FOUND;
@@ -67,6 +69,7 @@ public class UserServiceImpl implements UserService {
                     .email(userRequest.getEmail())
                     .phone(userRequest.getPhone())
                     .isMentor(userRequest.getIsMentor().getValue())
+                    .image(userRequest.getImage())
                     .build();
 
             var createdUser = userRepository.save(user);
@@ -109,7 +112,7 @@ public class UserServiceImpl implements UserService {
             var jwtToken = response.authenticationResult().idToken();
             var token = new BearerAccessRefreshToken(jwtToken, null, null, null, null, null);
 
-            return buildLoginResponse(LOGIN_SUCCESS, token.getUsername());
+            return buildLoginResponse(token.getUsername());
 
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
@@ -146,7 +149,7 @@ public class UserServiceImpl implements UserService {
                     userRepository.update(profile);
                 }
 
-                return buildResponse(PROFILE_SUCESS);
+                return buildResponse(PROFILE_SUCCESS);
 
             } else {
                 throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
@@ -187,7 +190,7 @@ public class UserServiceImpl implements UserService {
                     userRepository.update(profile);
                 }
 
-                return buildResponse(PROFILE_SUCESS);
+                return buildResponse(PROFILE_SUCCESS);
 
             } else {
                 throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
@@ -227,6 +230,16 @@ public class UserServiceImpl implements UserService {
         return paginatedMentees;
     }
 
+    @Override
+    public ResponseModel forgotPassword(ForgotPasswordModel forgotPasswordModel) {
+        try {
+            awsCognitoService.forgotPassword(forgotPasswordModel.getEmail());
+            return buildResponse(FORGOT_PASSWORD_SUCCESS);
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
     private ResponseModel buildResponse(String message) {
         var response = new ResponseModel();
         response.setMensagem(message);
@@ -234,10 +247,10 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    private LoginResponseModel buildLoginResponse(String message, String token) {
+    private LoginResponseModel buildLoginResponse(String token) {
         var loginResponse = new LoginResponseModel();
-        loginResponse.setMensagem(message);
-        loginResponse.setStatus(BigDecimal.valueOf(HttpStatus.CREATED.getCode()));
+        loginResponse.setMensagem(LOGIN_SUCCESS);
+        loginResponse.setStatus(BigDecimal.valueOf(HttpStatus.OK.getCode()));
         loginResponse.setToken(token);
         return loginResponse;
     }

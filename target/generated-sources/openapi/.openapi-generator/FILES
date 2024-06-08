@@ -1,4 +1,5 @@
 src/main/java/mariposas/controller/UserApi.java
+src/main/java/mariposas/model/ForgotPasswordModel.java
 src/main/java/mariposas/model/LoginModel.java
 src/main/java/mariposas/model/LoginResponseModel.java
 src/main/java/mariposas/model/MenteeProfileModel.java

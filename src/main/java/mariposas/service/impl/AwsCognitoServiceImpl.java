@@ -6,20 +6,27 @@ import jakarta.inject.Singleton;
 import mariposas.exception.BaseException;
 import mariposas.service.AwsCognitoService;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminConfirmSignUpRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static mariposas.constant.AppConstant.EMAIL;
+import static mariposas.constant.AppConstant.PASSWORD;
+import static mariposas.constant.AppConstant.USERNAME;
 import static mariposas.constant.AppConstant.USER_NOT_FOUND;
 
 @Singleton
@@ -38,12 +45,12 @@ public class AwsCognitoServiceImpl implements AwsCognitoService {
 
     @Override
     public AdminCreateUserResponse registerUser(String email, String password) {
-        AttributeType emailAttribute = AttributeType.builder()
-                .name("email")
+        var emailAttribute = AttributeType.builder()
+                .name(EMAIL)
                 .value(email)
                 .build();
 
-        AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
+        var createUserRequest = AdminCreateUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(email)
                 .temporaryPassword(password)
@@ -51,12 +58,26 @@ public class AwsCognitoServiceImpl implements AwsCognitoService {
                 .messageAction(MessageActionType.SUPPRESS)
                 .build();
 
-        AdminCreateUserResponse createUserResponse = cognitoClient.adminCreateUser(createUserRequest);
+        var createUserResponse = cognitoClient.adminCreateUser(createUserRequest);
+
         cognitoClient.adminSetUserPassword(builder -> builder
                 .userPoolId(userPoolId)
                 .username(email)
                 .password(password)
                 .permanent(true));
+
+        AttributeType emailVerifiedAttribute = AttributeType.builder()
+                .name("email_verified")
+                .value("true")
+                .build();
+
+        var updateUserAttributesRequest = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .userAttributes(emailVerifiedAttribute)
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(updateUserAttributesRequest);
 
         return createUserResponse;
     }
@@ -64,10 +85,10 @@ public class AwsCognitoServiceImpl implements AwsCognitoService {
     @Override
     public AdminInitiateAuthResponse authenticateUser(String email, String password) {
         Map<String, String> authParams = new HashMap<>();
-        authParams.put("USERNAME", getUsernameByEmail(email));
-        authParams.put("PASSWORD", password);
+        authParams.put(USERNAME, getUsernameByEmail(email));
+        authParams.put(PASSWORD, password);
 
-        AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
+        var authRequest = AdminInitiateAuthRequest.builder()
                 .userPoolId(userPoolId)
                 .clientId(clientId)
                 .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
@@ -77,10 +98,20 @@ public class AwsCognitoServiceImpl implements AwsCognitoService {
         return cognitoClient.adminInitiateAuth(authRequest);
     }
 
+    @Override
+    public ForgotPasswordResponse forgotPassword(String email) {
+        var forgotPasswordRequest = ForgotPasswordRequest.builder()
+                .clientId(clientId)
+                .username(email)
+                .build();
+
+        return cognitoClient.forgotPassword(forgotPasswordRequest);
+    }
+
     private String getUsernameByEmail(String email) {
-        ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
+        var response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
-                .filter("email = \"" + email + "\"")
+                .filter(EMAIL.concat(" = \"" + email + "\""))
                 .build());
 
         if (response.users().isEmpty()) {

@@ -3,6 +3,7 @@ package mariposas.controller;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
 import mariposas.exception.BaseException;
+import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
@@ -29,6 +30,15 @@ public class UserController implements UserApi {
     @Override
     public ResponseModel createUser(UserModel user) {
         return userService.createUser(user);
+    }
+
+    @Override
+    public ResponseModel forgotPassword(String token, ForgotPasswordModel forgotPasswordModel) {
+        if (jwtAuthenticationService.validate(token, forgotPasswordModel.getEmail())) {
+            return userService.forgotPassword(forgotPasswordModel);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
     }
 
     @Override

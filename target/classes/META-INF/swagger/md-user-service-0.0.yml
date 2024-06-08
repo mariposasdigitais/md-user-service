@@ -118,11 +118,47 @@ paths:
           type: string
       responses:
         "200":
-          description: List of mentees
+          description: List of mentees successfully returned
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedMentees"
+        "400":
+          description: Bad request
+        "404":
+          description: Not found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+  /api/md-user-service/v1/user/password/forgot:
+    post:
+      tags:
+      - User
+      summary: Request password reset link
+      description: Request password reset link
+      operationId: forgotPassword
+      parameters:
+      - name: token
+        in: header
+        description: JWT User Access Token (required)
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: (optional)
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordModel"
+        required: true
+      responses:
+        "200":
+          description: Password recovery request sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseModel"
         "400":
           description: Bad request
         "404":
@@ -205,6 +241,13 @@ paths:
           description: Internal Server Error
 components:
   schemas:
+    ForgotPasswordModel:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+      description: ForgotPasswordModel
     LoginModel:
       type: object
       properties:
@@ -370,7 +413,6 @@ components:
           example: "31995236485"
         image:
           type: string
-          format: binary
           nullable: true
         isMentor:
           nullable: true

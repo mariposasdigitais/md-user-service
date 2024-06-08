@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import io.micronaut.http.multipart.CompletedFileUpload;
 import mariposas.model.UserModelIsMentor;
 import com.fasterxml.jackson.annotation.*;
 import io.micronaut.serde.annotation.Serdeable;
@@ -75,7 +74,7 @@ public class UserModel {
     @Schema(name = "image", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @JsonProperty(JSON_PROPERTY_IMAGE)
     @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
-    private CompletedFileUpload image;
+    private String image;
 
     @Nullable(inherited = true)
     @Schema(name = "isMentor", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -182,14 +181,14 @@ public class UserModel {
     /**
      * @return the image property value
      */
-    public CompletedFileUpload getImage() {
+    public String getImage() {
         return image;
     }
 
     /**
      * Set the image property value
      */
-    public void setImage(CompletedFileUpload image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -198,7 +197,7 @@ public class UserModel {
      *
      * @return The same instance of UserModel for chaining.
      */
-    public UserModel image(CompletedFileUpload image) {
+    public UserModel image(String image) {
         this.image = image;
         return this;
     }

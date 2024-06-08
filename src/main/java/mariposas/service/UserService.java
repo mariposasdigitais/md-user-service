@@ -1,5 +1,6 @@
 package mariposas.service;
 
+import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
@@ -19,4 +20,6 @@ public interface UserService {
     ResponseModel mentorProfile(MentorProfileModel mentorProfileModel);
 
     PaginatedMentees getMenteesList(Integer limit, Integer page);
+
+    ResponseModel forgotPassword(ForgotPasswordModel forgotPasswordModel);
 }

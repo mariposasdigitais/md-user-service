@@ -10,11 +10,15 @@ public class AppConstant {
     public static final String USER_CREATED = "Cadastro criado com sucesso. Agora, você é uma mariposa!";
     public static final String LOGIN_SUCCESS = "Acesso concedido";
     public static final String LOGIN_FAIL = "Acesso não permitido";
-    public static final String PROFILE_SUCESS = "Perfil atualizado com sucesso";
+    public static final String PROFILE_SUCCESS = "Perfil atualizado com sucesso";
+    public static final String FORGOT_PASSWORD_SUCCESS = "Se o e-mail existir na base, um link de redefinição de senha será enviado ao seu e-mail!";
 
     public static final String BUCKET = "mariposas-digitais";
     public static final String BUCKET_PATH = "profile-images/";
     public static final String IMAGE_NAME = "MD_IMAGE_%s.png";
+    public static final String USERNAME = "USERNAME";
+    public static final String PASSWORD = "PASSWORD";
+    public static final String EMAIL = "email";
 
     public static final String QUERY_GET_MENTEES = "SELECT u.name, u.email, u.phone, u.profile, " +
             "u.age, ml.\"level\" AS menteeLevel, u.image " +

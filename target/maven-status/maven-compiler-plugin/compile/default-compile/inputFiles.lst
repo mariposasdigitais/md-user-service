@@ -16,6 +16,7 @@ C:\Users\jessi\Downloads\md-user-service\src\main\java\mariposas\service\impl\Us
 C:\Users\jessi\Downloads\md-user-service\src\main\java\mariposas\service\JwtAuthenticationService.java
 C:\Users\jessi\Downloads\md-user-service\src\main\java\mariposas\service\UserService.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\controller\UserApi.java
+C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\ForgotPasswordModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\LoginModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\LoginResponseModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\MenteeProfileModel.java
