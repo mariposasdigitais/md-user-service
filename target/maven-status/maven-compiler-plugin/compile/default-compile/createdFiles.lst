@@ -4,6 +4,7 @@ mariposas\model\$LoginModel$Introspection.class
 mariposas\repository\$UserRepository$Intercepted$Definition$Exec.class
 mariposas\controller\$UserController$Definition.class
 mariposas\model\UserEntity$UserEntityBuilder.class
+mariposas\model\$MenteesModel$Introspection.class
 mariposas\service\JwtAuthenticationService.class
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.repository.$MenteesRepository$Intercepted$Definition
 META-INF\swagger\views\swagger-ui\res\swagger-ui-bundle.js
@@ -32,6 +33,7 @@ mariposas\Application$Configurer.class
 mariposas\model\MenteesEntity.class
 mariposas\repository\$MenteesRepository$Intercepted$Definition$Exec.class
 mariposas\model\$MentorsEntity$ReflectConfig.class
+META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$MentorProfileModelMentoringCapacity$Introspection
 mariposas\Application.class
 mariposas\model\MenteesEntity$MenteesEntityBuilder.class
 mariposas\model\MentorProfileModel.class
@@ -39,10 +41,12 @@ META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.
 mariposas\controller\UserController.class
 mariposas\model\$LoginResponseModel$Introspection.class
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.repository.$UserRepository$Intercepted$Definition
+mariposas\model\$PaginatedMentees$Introspection.class
 mariposas\config\$AwsCognitoConfig$CognitoIdentityProviderClient0$Definition.class
 mariposas\controller\UserApi.class
 mariposas\model\$UserEntity$ReflectConfig.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$LoginResponseModel$Introspection
+META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$PaginatedMentees$Introspection
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$UserModel$Introspection
 mariposas\model\$UserEntity$UserEntityBuilder$ReflectConfig.class
 META-INF\micronaut\io.micronaut.core.graal.GraalReflectionConfigurer\mariposas.model.$MentorsEntity$MentorsEntityBuilder$ReflectConfig
@@ -51,6 +55,7 @@ mariposas\model\$UserModel$Introspection.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$UserEntity$Introspection
 mariposas\repository\MenteesRepository$Intercepted.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$MentorProfileModel$Introspection
+mariposas\model\PaginatedMentees.class
 mariposas\repository\UserRepository.class
 mariposas\service\impl\AwsCognitoServiceImpl.class
 META-INF\micronaut\io.micronaut.core.graal.GraalReflectionConfigurer\mariposas.model.$UserEntity$ReflectConfig
@@ -65,11 +70,14 @@ mariposas\model\$MenteeProfileModel$Introspection.class
 mariposas\model\ResponseModel.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$MenteeProfileModel$Introspection
 META-INF\micronaut\io.micronaut.core.graal.GraalReflectionConfigurer\mariposas.model.$MenteesEntity$ReflectConfig
+mariposas\model\$MentorProfileModelMentoringCapacity$Introspection.class
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.service.impl.$UserServiceImpl$Definition
 mariposas\repository\MentorsRepository.class
+mariposas\model\MentorProfileModelMentoringCapacity.class
 META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$UserModelIsMentor$Introspection
 META-INF\micronaut\io.micronaut.context.ApplicationContextConfigurer\mariposas.Application$Configurer
 mariposas\model\$MentorsEntity$MentorsEntityBuilder$ReflectConfig.class
+META-INF\micronaut\io.micronaut.core.beans.BeanIntrospectionReference\mariposas.model.$MenteesModel$Introspection
 META-INF\swagger\views\swagger-ui\res\classic.css
 META-INF\swagger\views\swagger-ui\res\swagger-ui-standalone-preset.js
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.controller.$UserController$Definition
@@ -81,6 +89,7 @@ mariposas\model\UserModelIsMentor.class
 mariposas\model\LoginModel.class
 mariposas\repository\$UserRepository$Intercepted$Definition.class
 mariposas\repository\UserRepository$Intercepted.class
+mariposas\model\MenteesModel.class
 mariposas\model\$MenteesEntity$MenteesEntityBuilder$ReflectConfig.class
 META-INF\micronaut\io.micronaut.inject.BeanDefinitionReference\mariposas.service.impl.$JwtAuthenticationServiceImpl$Definition
 META-INF\micronaut\io.micronaut.core.graal.GraalReflectionConfigurer\mariposas.model.$MentorsEntity$ReflectConfig

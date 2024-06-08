@@ -20,6 +20,7 @@ import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MentorProfileModel;
+import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
 import jakarta.annotation.Generated;
@@ -66,6 +67,35 @@ public interface UserApi {
     );
 
     /**
+     * {@summary Obtain a list of mentees available for sponsorship}
+     *
+     * @param token JWT User Access Token (required)
+     * @param email User email (required)
+     * @param limit Number of records per page (optional, default to 2)
+     * @param page Current page (optional, default to 1)
+     * @return PaginatedMentees
+     */
+    @Operation(
+        operationId = "getMenteesList",
+        summary = "Obtain a list of mentees available for sponsorship",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "List of mentees", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PaginatedMentees.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "422", description = "Unprocessable Entity"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+        }
+    )
+    @Get("/user/mentee")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    PaginatedMentees getMenteesList(
+        @Header("token") @NotNull String token,
+        @Header("email") @NotNull String email,
+        @QueryValue(value = "limit", defaultValue = "2") @Nullable(inherited = true) @Min(2) Integer limit,
+        @QueryValue(value = "page", defaultValue = "1") @Nullable(inherited = true) @Min(1) Integer page
+    );
+
+    /**
      * {@summary Login}
      *
      * @param loginModel (optional)
@@ -91,7 +121,7 @@ public interface UserApi {
     /**
      * {@summary Complete mentee profile}
      *
-     * @param token (required)
+     * @param token JWT User Access Token (required)
      * @param menteeProfileModel (optional)
      * @return ResponseModel
      */
@@ -116,7 +146,7 @@ public interface UserApi {
     /**
      * {@summary Complete mentor profile}
      *
-     * @param token (required)
+     * @param token JWT User Access Token (required)
      * @param mentorProfileModel (optional)
      * @return ResponseModel
      */

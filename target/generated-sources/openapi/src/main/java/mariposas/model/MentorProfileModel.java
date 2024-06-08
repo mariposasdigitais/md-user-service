@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import mariposas.model.UserModelIsMentor;
+import mariposas.model.MentorProfileModelMentoringCapacity;
 import com.fasterxml.jackson.annotation.*;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.validation.constraints.*;
@@ -66,7 +66,7 @@ public class MentorProfileModel {
     @Schema(name = "mentoringCapacity", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @JsonProperty(JSON_PROPERTY_MENTORING_CAPACITY)
     @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
-    private UserModelIsMentor mentoringCapacity;
+    private MentorProfileModelMentoringCapacity mentoringCapacity = MentorProfileModelMentoringCapacity.NUMBER_1;
 
     @Nullable(inherited = true)
     @Schema(name = "profile", example = "Olá, sou a Maria Eugênia [...]", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -149,14 +149,14 @@ public class MentorProfileModel {
     /**
      * @return the mentoringCapacity property value
      */
-    public UserModelIsMentor getMentoringCapacity() {
+    public MentorProfileModelMentoringCapacity getMentoringCapacity() {
         return mentoringCapacity;
     }
 
     /**
      * Set the mentoringCapacity property value
      */
-    public void setMentoringCapacity(UserModelIsMentor mentoringCapacity) {
+    public void setMentoringCapacity(MentorProfileModelMentoringCapacity mentoringCapacity) {
         this.mentoringCapacity = mentoringCapacity;
     }
 
@@ -165,7 +165,7 @@ public class MentorProfileModel {
      *
      * @return The same instance of MentorProfileModel for chaining.
      */
-    public MentorProfileModel mentoringCapacity(UserModelIsMentor mentoringCapacity) {
+    public MentorProfileModel mentoringCapacity(MentorProfileModelMentoringCapacity mentoringCapacity) {
         this.mentoringCapacity = mentoringCapacity;
         return this;
     }

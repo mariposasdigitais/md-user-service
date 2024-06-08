@@ -1,5 +1,7 @@
 package mariposas.service.impl;
 
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import jakarta.inject.Singleton;
@@ -8,8 +10,10 @@ import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MenteesEntity;
+import mariposas.model.MenteesModel;
 import mariposas.model.MentorProfileModel;
 import mariposas.model.MentorsEntity;
+import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserEntity;
 import mariposas.model.UserModel;
@@ -20,6 +24,8 @@ import mariposas.service.AwsCognitoService;
 import mariposas.service.UserService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static mariposas.constant.AppConstant.LOGIN_SUCCESS;
 import static mariposas.constant.AppConstant.PROFILE_SUCESS;
@@ -190,6 +196,35 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
+    }
+
+    @Override
+    public PaginatedMentees getMenteesList(Integer limit, Integer page) {
+        Pageable pageable = Pageable.from(page - 1, limit);
+        Page<MenteesModel> menteePage = menteesRepository.findAllMentees(pageable);
+
+        List<MenteesModel> listMentees = new ArrayList<>();
+
+        for (MenteesModel menteesModel : menteePage.getContent()) {
+            var mentee = new MenteesModel();
+            mentee.setAge(menteesModel.getAge());
+            mentee.setMenteeLevel(menteesModel.getMenteeLevel());
+            mentee.setEmail(menteesModel.getEmail());
+            mentee.setName(menteesModel.getName());
+            mentee.setImage(menteesModel.getImage());
+            mentee.setPhone(menteesModel.getPhone());
+            mentee.setProfile(menteesModel.getProfile());
+
+            listMentees.add(mentee);
+        }
+
+        var paginatedMentees = new PaginatedMentees();
+        paginatedMentees.data(listMentees);
+        paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
+        paginatedMentees.totalRecordsPerPage(limit);
+        paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
+
+        return paginatedMentees;
     }
 
     private ResponseModel buildResponse(String message) {

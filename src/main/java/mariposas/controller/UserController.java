@@ -7,6 +7,7 @@ import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MentorProfileModel;
+import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
 import mariposas.service.JwtAuthenticationService;
@@ -28,6 +29,15 @@ public class UserController implements UserApi {
     @Override
     public ResponseModel createUser(UserModel user) {
         return userService.createUser(user);
+    }
+
+    @Override
+    public PaginatedMentees getMenteesList(String token, String email, Integer limit, Integer page) {
+        if (jwtAuthenticationService.validate(token, email)) {
+            return userService.getMenteesList(limit, page);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
     }
 
     @Override

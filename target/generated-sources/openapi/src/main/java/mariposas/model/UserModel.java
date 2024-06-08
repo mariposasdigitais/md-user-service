@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import mariposas.model.UserModelIsMentor;
 import com.fasterxml.jackson.annotation.*;
 import io.micronaut.serde.annotation.Serdeable;
@@ -33,6 +34,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
     UserModel.JSON_PROPERTY_EMAIL,
     UserModel.JSON_PROPERTY_PASSWORD,
     UserModel.JSON_PROPERTY_PHONE,
+    UserModel.JSON_PROPERTY_IMAGE,
     UserModel.JSON_PROPERTY_IS_MENTOR
 })
 @Generated("io.micronaut.openapi.generator.JavaMicronautServerCodegen")
@@ -42,6 +44,7 @@ public class UserModel {
     public static final String JSON_PROPERTY_EMAIL = "email";
     public static final String JSON_PROPERTY_PASSWORD = "password";
     public static final String JSON_PROPERTY_PHONE = "phone";
+    public static final String JSON_PROPERTY_IMAGE = "image";
     public static final String JSON_PROPERTY_IS_MENTOR = "isMentor";
 
     @Nullable(inherited = true)
@@ -67,6 +70,12 @@ public class UserModel {
     @JsonProperty(JSON_PROPERTY_PHONE)
     @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
     private String phone;
+
+    @Nullable(inherited = true)
+    @Schema(name = "image", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @JsonProperty(JSON_PROPERTY_IMAGE)
+    @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
+    private CompletedFileUpload image;
 
     @Nullable(inherited = true)
     @Schema(name = "isMentor", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -171,6 +180,30 @@ public class UserModel {
     }
 
     /**
+     * @return the image property value
+     */
+    public CompletedFileUpload getImage() {
+        return image;
+    }
+
+    /**
+     * Set the image property value
+     */
+    public void setImage(CompletedFileUpload image) {
+        this.image = image;
+    }
+
+    /**
+     * Set image in a chainable fashion.
+     *
+     * @return The same instance of UserModel for chaining.
+     */
+    public UserModel image(CompletedFileUpload image) {
+        this.image = image;
+        return this;
+    }
+
+    /**
      * @return the isMentor property value
      */
     public UserModelIsMentor getIsMentor() {
@@ -207,12 +240,13 @@ public class UserModel {
             Objects.equals(email, userModel.email) &&
             Objects.equals(password, userModel.password) &&
             Objects.equals(phone, userModel.phone) &&
+            Objects.equals(image, userModel.image) &&
             Objects.equals(isMentor, userModel.isMentor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, email, password, phone, isMentor);
+        return Objects.hash(name, email, password, phone, image, isMentor);
     }
 
     @Override
@@ -222,6 +256,7 @@ public class UserModel {
             + "email: " + getEmail() + ", "
             + "password: " + getPassword() + ", "
             + "phone: " + getPhone() + ", "
+            + "image: " + getImage() + ", "
             + "isMentor: " + getIsMentor()
             + ")";
     }

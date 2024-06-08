@@ -19,7 +19,10 @@ C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\ma
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\LoginModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\LoginResponseModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\MenteeProfileModel.java
+C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\MenteesModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\MentorProfileModel.java
+C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\MentorProfileModelMentoringCapacity.java
+C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\PaginatedMentees.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\ResponseModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\UserModel.java
 C:\Users\jessi\Downloads\md-user-service\target\generated-sources\openapi\src\main\java\mariposas\model\UserModelIsMentor.java

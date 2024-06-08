@@ -60,7 +60,7 @@ public class MenteeProfileModel {
     @Schema(name = "isSponsored", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @JsonProperty(JSON_PROPERTY_IS_SPONSORED)
     @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
-    private Boolean isSponsored;
+    private Boolean isSponsored = false;
 
     @Nullable(inherited = true)
     @Schema(name = "age", example = "24", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

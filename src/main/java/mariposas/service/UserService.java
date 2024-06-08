@@ -4,6 +4,7 @@ import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MentorProfileModel;
+import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
 
@@ -16,4 +17,6 @@ public interface UserService {
     ResponseModel menteeProfile(MenteeProfileModel menteeProfileModel);
 
     ResponseModel mentorProfile(MentorProfileModel mentorProfileModel);
+
+    PaginatedMentees getMenteesList(Integer limit, Integer page);
 }
