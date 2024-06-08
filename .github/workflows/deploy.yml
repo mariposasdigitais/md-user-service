@@ -53,7 +53,7 @@ jobs:
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@main
         with:
-          image: us-east1-docker.pkg.dev/mariposas-digitais/mariposas-digitais-front/mariposas-digitais-back:${{ env.GH_REF }}
+          image: us-east1-docker.pkg.dev/mariposas-digitais/mariposas-digitais-back/mariposas-digitais-back:${{ env.GH_REF }}
           service: mariposas-digitais-back
           region: us-east1
           platform: managed
