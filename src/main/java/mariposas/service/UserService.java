@@ -1,11 +1,11 @@
 package mariposas.service;
 
-import mariposas.model.ForgotPasswordModel;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MentorProfileModel;
-import mariposas.model.PaginatedMentees;
+import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
 
@@ -19,7 +19,11 @@ public interface UserService {
 
     ResponseModel mentorProfile(MentorProfileModel mentorProfileModel);
 
-    PaginatedMentees getMenteesList(Integer limit, Integer page);
+    ResponseModel changePassword(PasswordModel passwordModel);
 
-    ResponseModel forgotPassword(ForgotPasswordModel forgotPasswordModel);
+    ResponseModel deleteUser(String email);
+
+    ResponseModel logout(String token);
+
+    ResponseModel imageProfile(String email, CompletedFileUpload arquivo);
 }

@@ -1,20 +1,17 @@
 package mariposas.service.impl;
 
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import jakarta.inject.Singleton;
 import mariposas.exception.BaseException;
-import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MenteesEntity;
-import mariposas.model.MenteesModel;
 import mariposas.model.MentorProfileModel;
 import mariposas.model.MentorsEntity;
-import mariposas.model.PaginatedMentees;
+import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserEntity;
 import mariposas.model.UserModel;
@@ -22,14 +19,17 @@ import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
 import mariposas.repository.UserRepository;
 import mariposas.service.AwsCognitoService;
+import mariposas.service.JwtService;
+import mariposas.service.S3Service;
 import mariposas.service.UserService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
-import static mariposas.constant.AppConstant.FORGOT_PASSWORD_SUCCESS;
+import static mariposas.constant.AppConstant.CHANGE_PASSWORD_SUCCESS;
+import static mariposas.constant.AppConstant.IMAGEM_UPLOAD_SUCCESS;
 import static mariposas.constant.AppConstant.LOGIN_SUCCESS;
+import static mariposas.constant.AppConstant.LOGOUT_SUCCESS;
+import static mariposas.constant.AppConstant.PROFILE_DELETE_SUCCESS;
 import static mariposas.constant.AppConstant.PROFILE_SUCCESS;
 import static mariposas.constant.AppConstant.USER_ALREADY_EXISTS;
 import static mariposas.constant.AppConstant.USER_CREATED;
@@ -41,16 +41,22 @@ public class UserServiceImpl implements UserService {
     private final MentorsRepository mentorsRepository;
     private final MenteesRepository menteesRepository;
     private final AwsCognitoService awsCognitoService;
+    private final JwtService jwtService;
+    private final S3Service s3Service;
 
     public UserServiceImpl(UserRepository userRepository,
                            MentorsRepository mentorsRepository,
                            MenteesRepository menteesRepository,
-                           AwsCognitoService awsCognitoService) {
+                           AwsCognitoService awsCognitoService,
+                           JwtService jwtService,
+                           S3Service s3Service) {
 
         this.userRepository = userRepository;
         this.mentorsRepository = mentorsRepository;
         this.menteesRepository = menteesRepository;
         this.awsCognitoService = awsCognitoService;
+        this.jwtService = jwtService;
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -69,7 +75,6 @@ public class UserServiceImpl implements UserService {
                     .email(userRequest.getEmail())
                     .phone(userRequest.getPhone())
                     .isMentor(userRequest.getIsMentor().getValue())
-                    .image(userRequest.getImage())
                     .build();
 
             var createdUser = userRepository.save(user);
@@ -202,39 +207,77 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginatedMentees getMenteesList(Integer limit, Integer page) {
-        Pageable pageable = Pageable.from(page - 1, limit);
-        Page<MenteesModel> menteePage = menteesRepository.findAllMentees(pageable);
-
-        List<MenteesModel> listMentees = new ArrayList<>();
-
-        for (MenteesModel menteesModel : menteePage.getContent()) {
-            var mentee = new MenteesModel();
-            mentee.setAge(menteesModel.getAge());
-            mentee.setMenteeLevel(menteesModel.getMenteeLevel());
-            mentee.setEmail(menteesModel.getEmail());
-            mentee.setName(menteesModel.getName());
-            mentee.setImage(menteesModel.getImage());
-            mentee.setPhone(menteesModel.getPhone());
-            mentee.setProfile(menteesModel.getProfile());
-
-            listMentees.add(mentee);
+    public ResponseModel changePassword(PasswordModel passwordModel) {
+        try {
+            awsCognitoService.changePassword(passwordModel.getEmail(), passwordModel.getPassword());
+            return buildResponse(CHANGE_PASSWORD_SUCCESS);
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
-
-        var paginatedMentees = new PaginatedMentees();
-        paginatedMentees.data(listMentees);
-        paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
-        paginatedMentees.totalRecordsPerPage(limit);
-        paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
-
-        return paginatedMentees;
     }
 
     @Override
-    public ResponseModel forgotPassword(ForgotPasswordModel forgotPasswordModel) {
+    public ResponseModel deleteUser(String email) {
         try {
-            awsCognitoService.forgotPassword(forgotPasswordModel.getEmail());
-            return buildResponse(FORGOT_PASSWORD_SUCCESS);
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser != null) {
+
+                if (existingUser.getIsMentor().equals(new BigDecimal(1))) {
+                    var user = mentorsRepository.findByUserId(existingUser);
+                    mentorsRepository.delete(user);
+                } else {
+                    var user = menteesRepository.findByUserId(existingUser);
+                    menteesRepository.delete(user);
+                }
+
+                userRepository.delete(existingUser);
+                awsCognitoService.deleteUser(email);
+            }
+
+            return buildResponse(PROFILE_DELETE_SUCCESS);
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseModel logout(String token) {
+        try {
+            jwtService.invalidateToken(token);
+            return buildResponse(LOGOUT_SUCCESS);
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseModel imageProfile(String email, CompletedFileUpload arquivo) {
+        try {
+            var name = email.split("@");
+            var path = s3Service.uploadFile(name[0], arquivo);
+
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser != null) {
+                var user = UserEntity.builder()
+                        .id(existingUser.getId())
+                        .profile(existingUser.getProfile())
+                        .age(existingUser.getAge())
+                        .name(existingUser.getName())
+                        .email(existingUser.getEmail())
+                        .phone(existingUser.getPhone())
+                        .isMentor(existingUser.getIsMentor())
+                        .image(path)
+                        .build();
+
+                userRepository.update(user);
+            }
+
+            return buildResponse(IMAGEM_UPLOAD_SUCCESS);
+
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }

@@ -60,4 +60,5 @@ aws:
   cognito:
     userPoolId: us-east-1_EZq6amARk
     clientId: 77ae69a0o2dh1hfbsp391h2214
-    region: us-east-1
+  s3:
+    bucket-name: mariposas-digitais

@@ -37,6 +37,30 @@ paths:
         '500':
           description: Internal Server Error
 
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Profile successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
   /user/login:
     post:
       tags:
@@ -56,6 +80,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /user/logout:
+    post:
+      tags:
+        - User
+      summary: Logout
+      operationId: logout
+      parameters:
+        - $ref: '#/components/parameters/token'
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
         '400':
           description: Bad request
         '404':
@@ -125,50 +173,31 @@ paths:
         '500':
           description: Internal Server Error
 
-  /user/mentee:
-    get:
-      tags:
-        - User
-      summary: Obtain a list of mentees available for sponsorship
-      operationId: getMenteesList
-      parameters:
-        - $ref: '#/components/parameters/token'
-        - $ref: '#/components/parameters/limitQuery'
-        - $ref: '#/components/parameters/pageQuery'
-        - $ref: '#/components/parameters/email'
-      responses:
-        '200':
-          description: List of mentees successfully returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedMentees'
-        '400':
-          description: Bad request
-        '404':
-          description: Not found
-        '422':
-          description: Unprocessable Entity
-        '500':
-          description: Internal Server Error
-
-  /user/password/forgot:
+  /user/profile/image:
     post:
       tags:
         - User
-      summary: Request password reset link
-      operationId: forgotPassword
+      summary: Insert a image profile
+      operationId: imageProfile
       parameters:
         - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
       requestBody:
-        required: false
+        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordModel'
+              type: object
+              required:
+                - arquivo
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+
       responses:
         '200':
-          description: Password recovery request sent successfully
+          description: Profile updated successfully
           content:
             application/json:
               schema:
@@ -182,6 +211,35 @@ paths:
         '500':
           description: Internal Server Error
 
+  /user/password:
+    post:
+      tags:
+        - User
+      summary: Change password
+      operationId: changePassword
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordModel'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
 
 components:
   parameters:
@@ -201,28 +259,6 @@ components:
       schema:
         type: string
 
-    limitQuery:
-      name: limit
-      in: query
-      required: false
-      description: Number of records per page
-      schema:
-        type: integer
-        example: 2
-        minimum: 2
-        default: 2
-
-    pageQuery:
-      name: page
-      in: query
-      required: false
-      description: Current page
-      schema:
-        type: integer
-        example: 1
-        minimum: 1
-        default: 1
-
   schemas:
     UserModel:
       type: object
@@ -239,8 +275,6 @@ components:
         phone:
           type: string
           example: 31995236485
-        image:
-          type: string
         isMentor:
           enum:
             - 1
@@ -294,48 +328,6 @@ components:
           type: string
           example: Olá, sou a Maria Eugênia [...]
 
-    MenteesModel:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Maria Eugênia Nascimento
-        email:
-          type: string
-          example: mariaeugenia@email.com
-        phone:
-          type: string
-          example: 31995236485
-        profile:
-          type: string
-          example: Olá, sou a Maria Eugênia [...]
-        age:
-          type: string
-          example: 24
-        menteeLevel:
-          type: string
-          example: LAGARTA
-        image:
-          type: string
-          format: binary
-
-    PaginatedMentees:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MenteesModel'
-        currentPage:
-          type: integer
-          example: 1
-        totalRecords:
-          type: integer
-          example: 1
-        totalRecordsPerPage:
-          type: integer
-          example: 2
-
     ResponseModel:
       type: object
       properties:
@@ -344,10 +336,12 @@ components:
         status:
           type: number
 
-    ForgotPasswordModel:
+    PasswordModel:
       type: object
       properties:
         email:
+          type: string
+        password:
           type: string
 
     LoginResponseModel:

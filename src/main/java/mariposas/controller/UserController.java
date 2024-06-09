@@ -2,16 +2,16 @@ package mariposas.controller;
 
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import mariposas.exception.BaseException;
-import mariposas.model.ForgotPasswordModel;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MentorProfileModel;
-import mariposas.model.PaginatedMentees;
+import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
-import mariposas.service.JwtAuthenticationService;
+import mariposas.service.JwtService;
 import mariposas.service.UserService;
 
 import static mariposas.constant.AppConstant.LOGIN_FAIL;
@@ -20,11 +20,20 @@ import static mariposas.constant.AppConstant.LOGIN_FAIL;
 public class UserController implements UserApi {
 
     private final UserService userService;
-    private final JwtAuthenticationService jwtAuthenticationService;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService, JwtAuthenticationService jwtAuthenticationService) {
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
-        this.jwtAuthenticationService = jwtAuthenticationService;
+        this.jwtService = jwtService;
+    }
+
+    @Override
+    public ResponseModel changePassword(String token, PasswordModel passwordModel) {
+        if (jwtService.validate(token, passwordModel.getEmail()) && jwtService.isValid(token)) {
+            return userService.changePassword(passwordModel);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
     }
 
     @Override
@@ -33,18 +42,18 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseModel forgotPassword(String token, ForgotPasswordModel forgotPasswordModel) {
-        if (jwtAuthenticationService.validate(token, forgotPasswordModel.getEmail())) {
-            return userService.forgotPassword(forgotPasswordModel);
+    public ResponseModel deleteUser(String token, String email) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return userService.deleteUser(email);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
     }
 
     @Override
-    public PaginatedMentees getMenteesList(String token, String email, Integer limit, Integer page) {
-        if (jwtAuthenticationService.validate(token, email)) {
-            return userService.getMenteesList(limit, page);
+    public ResponseModel imageProfile(String token, String email, CompletedFileUpload arquivo) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return userService.imageProfile(email, arquivo);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
@@ -56,8 +65,13 @@ public class UserController implements UserApi {
     }
 
     @Override
+    public ResponseModel logout(String token) {
+        return userService.logout(token);
+    }
+
+    @Override
     public ResponseModel menteeProfile(String token, MenteeProfileModel menteeProfileModel) {
-        if (jwtAuthenticationService.validate(token, menteeProfileModel.getEmail())) {
+        if (jwtService.validate(token, menteeProfileModel.getEmail()) && jwtService.isValid(token)) {
             return userService.menteeProfile(menteeProfileModel);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
@@ -66,7 +80,7 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseModel mentorProfile(String token, MentorProfileModel mentorProfileModel) {
-        if (jwtAuthenticationService.validate(token, mentorProfileModel.getEmail())) {
+        if (jwtService.validate(token, mentorProfileModel.getEmail()) && jwtService.isValid(token)) {
             return userService.mentorProfile(mentorProfileModel);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);

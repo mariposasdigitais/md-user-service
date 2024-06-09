@@ -6,17 +6,17 @@ import jakarta.inject.Singleton;
 import mariposas.exception.BaseException;
 import mariposas.service.AwsCognitoService;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminConfirmSignUpRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ForgotPasswordResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 
@@ -99,13 +99,25 @@ public class AwsCognitoServiceImpl implements AwsCognitoService {
     }
 
     @Override
-    public ForgotPasswordResponse forgotPassword(String email) {
-        var forgotPasswordRequest = ForgotPasswordRequest.builder()
-                .clientId(clientId)
+    public AdminDeleteUserResponse deleteUser(String email) {
+        var request = AdminDeleteUserRequest.builder()
+                .userPoolId(userPoolId)
                 .username(email)
                 .build();
 
-        return cognitoClient.forgotPassword(forgotPasswordRequest);
+        return cognitoClient.adminDeleteUser(request);
+    }
+
+    @Override
+    public AdminSetUserPasswordResponse changePassword(String email, String password) {
+        var request = AdminSetUserPasswordRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .password(password)
+                .permanent(true)
+                .build();
+
+        return cognitoClient.adminSetUserPassword(request);
     }
 
     private String getUsernameByEmail(String email) {

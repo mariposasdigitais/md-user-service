@@ -66,21 +66,16 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>io.micronaut.aws</groupId>-->
-        <!--      <artifactId>micronaut-aws-parameter-store</artifactId>-->
-        <!--      <scope>compile</scope>-->
-        <!--    </dependency>-->
-            <dependency>
-              <groupId>io.micronaut.aws</groupId>
-              <artifactId>micronaut-aws-sdk-v2</artifactId>
-              <scope>compile</scope>
-            </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>io.micronaut.aws</groupId>-->
-        <!--      <artifactId>micronaut-aws-secretsmanager</artifactId>-->
-        <!--      <scope>compile</scope>-->
-        <!--    </dependency>-->
+        <dependency>
+            <groupId>io.micronaut.aws</groupId>
+            <artifactId>micronaut-aws-sdk-v2</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.25.69</version>
+        </dependency>
         <dependency>
             <groupId>io.micronaut.beanvalidation</groupId>
             <artifactId>micronaut-hibernate-validator</artifactId>
