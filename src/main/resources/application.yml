@@ -18,6 +18,7 @@ micronaut:
             - OPTIONS
           allowedHeaders:
             - "Content-Type"
+            - "token"
   router:
     static-resources:
       swagger:
