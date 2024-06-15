@@ -249,7 +249,6 @@ public class UserServiceImpl implements UserService {
                     }
 
                     menteesRepository.delete(user);
-
                 }
 
                 userRepository.delete(existingUser);

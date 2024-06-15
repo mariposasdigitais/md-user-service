@@ -241,6 +241,114 @@ paths:
         '500':
           description: Internal Server Error
 
+  /sponsorship:
+    post:
+      tags:
+        - Sponsorship
+      summary: Sponsoring
+      operationId: sponsoringMentee
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SponsorshipModel'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+    delete:
+      tags:
+        - Sponsorship
+      summary: Cancel sponsorship
+      operationId: cancelSponsorship
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/emailMentee'
+        - $ref: '#/components/parameters/emailMentor'
+      responses:
+        '200':
+          description: Sponsorship successfully canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /sponsorship/mentee:
+    get:
+      tags:
+        - Sponsorship
+      summary: Obtain a list of mentees available for sponsorship
+      operationId: getMenteesList
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/limitQuery'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMentees'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /sponsorship/mentor:
+    get:
+      tags:
+        - Sponsorship
+      summary: Get the profile of the mentor who sponsored her
+      operationId: getMentorProfile
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Mentor profile successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+
 components:
   parameters:
     token:
@@ -258,6 +366,44 @@ components:
       description: User email
       schema:
         type: string
+
+    emailMentee:
+      name: emailMentee
+      in: header
+      required: true
+      description: Mentee email
+      schema:
+        type: string
+
+    emailMentor:
+      name: emailMentor
+      in: header
+      required: true
+      description: Mentor email
+      schema:
+        type: string
+
+    limitQuery:
+      name: limit
+      in: query
+      required: false
+      description: Number of records per page
+      schema:
+        type: integer
+        example: 2
+        minimum: 2
+        default: 2
+
+    pageQuery:
+      name: page
+      in: query
+      required: false
+      description: Current page
+      schema:
+        type: integer
+        example: 1
+        minimum: 1
+        default: 1
 
   schemas:
     UserModel:
@@ -327,6 +473,83 @@ components:
         profile:
           type: string
           example: Olá, sou a Maria Eugênia [...]
+
+    MenteesModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        phone:
+          type: string
+          example: 31995236485
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+        age:
+          type: string
+          example: 24
+        menteeLevel:
+          type: string
+          example: LAGARTA
+        image:
+          type: string
+          format: byte
+
+    PaginatedMentees:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenteesModel'
+        currentPage:
+          type: integer
+          example: 1
+        totalRecords:
+          type: integer
+          example: 1
+        totalRecordsPerPage:
+          type: integer
+          example: 2
+
+    SponsorshipModel:
+      type: object
+      properties:
+        emailMentee:
+          type: string
+          example: mariaeugenia@email.com
+        emailMentor:
+          type: string
+          example: anastaciabatista@email.com
+
+    MentorModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        phone:
+          type: string
+          example: 31995236485
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+        age:
+          type: string
+          example: 24
+        education:
+          type: string
+          example: Bacharelado em Sistemas de Informação
+        image:
+          type: string
+          format: byte
 
     ResponseModel:
       type: object
