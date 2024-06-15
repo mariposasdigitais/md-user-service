@@ -11,12 +11,14 @@ import mariposas.model.MenteeProfileModel;
 import mariposas.model.MenteesEntity;
 import mariposas.model.MentorProfileModel;
 import mariposas.model.MentorsEntity;
+import mariposas.model.MentorshipEntity;
 import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserEntity;
 import mariposas.model.UserModel;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
+import mariposas.repository.MentorshipRepository;
 import mariposas.repository.UserRepository;
 import mariposas.service.AwsCognitoService;
 import mariposas.service.JwtService;
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final MentorsRepository mentorsRepository;
     private final MenteesRepository menteesRepository;
+    private final MentorshipRepository mentorshipRepository;
     private final AwsCognitoService awsCognitoService;
     private final JwtService jwtService;
     private final S3Service s3Service;
@@ -47,6 +50,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository,
                            MentorsRepository mentorsRepository,
                            MenteesRepository menteesRepository,
+                           MentorshipRepository mentorshipRepository,
                            AwsCognitoService awsCognitoService,
                            JwtService jwtService,
                            S3Service s3Service) {
@@ -54,6 +58,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.mentorsRepository = mentorsRepository;
         this.menteesRepository = menteesRepository;
+        this.mentorshipRepository = mentorshipRepository;
         this.awsCognitoService = awsCognitoService;
         this.jwtService = jwtService;
         this.s3Service = s3Service;
@@ -225,10 +230,26 @@ public class UserServiceImpl implements UserService {
 
                 if (existingUser.getIsMentor().equals(new BigDecimal(1))) {
                     var user = mentorsRepository.findByUserId(existingUser);
+                    var mentorshipList = mentorshipRepository.findByMentorId(user);
+
+                    if (mentorshipList != null) {
+                        for (MentorshipEntity mentorship : mentorshipList) {
+                            mentorshipRepository.delete(mentorship);
+                        }
+                    }
+
                     mentorsRepository.delete(user);
+
                 } else {
                     var user = menteesRepository.findByUserId(existingUser);
+                    var mentorship = mentorshipRepository.findByMenteeId(user);
+
+                    if (mentorship != null) {
+                        mentorshipRepository.delete(mentorship);
+                    }
+
                     menteesRepository.delete(user);
+
                 }
 
                 userRepository.delete(existingUser);
