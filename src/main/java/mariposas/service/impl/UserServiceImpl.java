@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import static mariposas.constant.AppConstant.CHANGE_PASSWORD_SUCCESS;
+import static mariposas.constant.AppConstant.FORGOT_PASSWORD;
 import static mariposas.constant.AppConstant.IMAGEM_UPLOAD_SUCCESS;
 import static mariposas.constant.AppConstant.LOGIN_SUCCESS;
 import static mariposas.constant.AppConstant.LOGOUT_SUCCESS;
@@ -370,6 +371,15 @@ public class UserServiceImpl implements UserService {
 
             return userProfile;
 
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseModel forgotPassword(String email) {
+        try {
+            return buildResponse(FORGOT_PASSWORD);
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }

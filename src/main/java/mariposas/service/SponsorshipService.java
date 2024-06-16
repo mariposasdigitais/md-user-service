@@ -4,6 +4,7 @@ import mariposas.model.MentorModel;
 import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
+import mariposas.model.SponsorshipNotificationModel;
 
 public interface SponsorshipService {
 
@@ -14,4 +15,5 @@ public interface SponsorshipService {
     ResponseModel cancelSponsorship(String emailMentee, String emailMentor);
 
     MentorModel getMentorProfile(String email);
+    SponsorshipNotificationModel sponsorshipNotification(String email);
 }

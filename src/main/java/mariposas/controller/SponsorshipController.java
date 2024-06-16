@@ -7,6 +7,7 @@ import mariposas.model.MentorModel;
 import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
+import mariposas.model.SponsorshipNotificationModel;
 import mariposas.service.JwtService;
 import mariposas.service.SponsorshipService;
 
@@ -53,6 +54,15 @@ public class SponsorshipController implements SponsorshipApi {
     public ResponseModel sponsoringMentee(String token, SponsorshipModel sponsorshipModel) {
         if (jwtService.validate(token, sponsorshipModel.getEmailMentor()) && jwtService.isValid(token)) {
             return sponsorshipService.sponsoringMentee(sponsorshipModel);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+    }
+
+    @Override
+    public SponsorshipNotificationModel sponsorshipNotification(String token, String email) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return sponsorshipService.sponsorshipNotification(email);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }

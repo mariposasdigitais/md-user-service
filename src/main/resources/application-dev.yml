@@ -3,22 +3,33 @@ micronaut:
     name: md-user-service
   server:
     context-path: /api/md-user-service/v1
-#    cors:
-#      enabled: true
-#      configurations:
-#        default:
-#          allowedOrigins:
-#            - "http://localhost:3000"
-#            - "*"
-#          allowedMethods:
-#            - GET
-#            - POST
-#            - PUT
-#            - DELETE
-#            - OPTIONS
-#          allowedHeaders:
-#            - "Content-Type"
-#            - "token"
+  email:
+    default:
+      from: mariposasdigitais@gmail.com
+    javamail:
+      host: smtp.gmail.com
+      port: 587
+      username: mariposasdigitais@gmail.com
+      password: jEss@l3t
+      properties:
+        mail.smtp.auth: true
+        mail.smtp.starttls.enable: true
+  #    cors:
+  #      enabled: true
+  #      configurations:
+  #        default:
+  #          allowedOrigins:
+  #            - "http://localhost:3000"
+  #            - "*"
+  #          allowedMethods:
+  #            - GET
+  #            - POST
+  #            - PUT
+  #            - DELETE
+  #            - OPTIONS
+  #          allowedHeaders:
+  #            - "Content-Type"
+  #            - "token"
   router:
     static-resources:
       swagger:
