@@ -16,6 +16,7 @@ import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserEntity;
 import mariposas.model.UserModel;
+import mariposas.model.UserProfileModel;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
 import mariposas.repository.MentorshipRepository;
@@ -26,6 +27,7 @@ import mariposas.service.S3Service;
 import mariposas.service.UserService;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static mariposas.constant.AppConstant.CHANGE_PASSWORD_SUCCESS;
 import static mariposas.constant.AppConstant.IMAGEM_UPLOAD_SUCCESS;
@@ -297,6 +299,67 @@ public class UserServiceImpl implements UserService {
             }
 
             return buildResponse(IMAGEM_UPLOAD_SUCCESS);
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Override
+    public UserProfileModel userProfile(String email) {
+        try {
+            var existingUser = userRepository.findByEmail(email);
+            var userProfile = new UserProfileModel();
+
+            if (existingUser != null) {
+
+                if (existingUser.getIsMentor().equals(new BigDecimal(1))) {
+                    var mentor = mentorsRepository.findByUserId(existingUser);
+                    var mentorship = mentorshipRepository.findByMentorId(mentor);
+
+                    userProfile.setName(existingUser.getName());
+
+                    if (existingUser.getImage() != null) {
+                        var filename = existingUser.getImage();
+                        var imageBytes = s3Service.getImageFile(filename);
+                        userProfile.setImage(imageBytes);
+                    }
+
+                    userProfile.setEmail(existingUser.getEmail());
+                    userProfile.setPhone(existingUser.getPhone());
+                    userProfile.setProfile(existingUser.getProfile());
+                    userProfile.setAge(existingUser.getAge());
+                    userProfile.setEducation(mentor.getEducation());
+                    userProfile.setMenteeLevel(null);
+                    userProfile.setIsSponsored(null);
+                    userProfile.setMentoringCapacity(mentor.getMentoringCapacity().toString());
+                    userProfile.setMentoringAvailable(String.valueOf((Integer.parseInt(mentor.getMentoringCapacity().toString()) - mentorship.size())));
+
+                } else {
+                    var mentee = menteesRepository.findByUserId(existingUser);
+
+                    userProfile.setName(existingUser.getName());
+
+                    if (existingUser.getImage() != null) {
+                        var filename = existingUser.getImage();
+                        var imageBytes = s3Service.getImageFile(filename);
+                        userProfile.setImage(imageBytes);
+                    }
+
+                    userProfile.setEmail(existingUser.getEmail());
+                    userProfile.setPhone(existingUser.getPhone());
+                    userProfile.setProfile(existingUser.getProfile());
+                    userProfile.setAge(existingUser.getAge());
+                    userProfile.setEducation(null);
+                    var menteeLevel = Objects.equals(mentee.getMenteeLevelId(), new BigDecimal(1)) ? "CASULO" : "LAGARTA";
+                    userProfile.setMenteeLevel(menteeLevel);
+                    userProfile.setIsSponsored(mentee.getIsSponsored());
+                    userProfile.setMentoringCapacity(null);
+                    userProfile.setMentoringAvailable(null);
+                }
+            }
+
+            return userProfile;
 
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());

@@ -113,6 +113,31 @@ paths:
         '500':
           description: Internal Server Error
 
+  /user/profile:
+    get:
+      tags:
+        - User
+      summary: Get user profile
+      operationId: userProfile
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
   /user/profile/mentee:
     post:
       tags:
@@ -217,8 +242,6 @@ paths:
         - User
       summary: Change password
       operationId: changePassword
-      parameters:
-        - $ref: '#/components/parameters/token'
       requestBody:
         required: false
         content:
@@ -425,6 +448,43 @@ components:
           enum:
             - 1
             - 2
+
+    UserProfileModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        image:
+          type: string
+          format: byte
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        phone:
+          type: string
+          example: 31995236485
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+        age:
+          type: string
+          example: 24
+        education:
+          type: string
+          example: Bacharelado em Sistemas de Informação
+        menteeLevel:
+          type: string
+          example: LAGARTA
+        isSponsored:
+          type: boolean
+          example: true
+        mentoringCapacity:
+          type: string
+          example: 2
+        mentoringAvailable:
+          type: string
+          example: 1
 
     LoginModel:
       properties:

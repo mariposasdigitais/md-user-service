@@ -8,6 +8,7 @@ import mariposas.model.MentorProfileModel;
 import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
+import mariposas.model.UserProfileModel;
 
 public interface UserService {
 
@@ -26,4 +27,5 @@ public interface UserService {
     ResponseModel logout(String token);
 
     ResponseModel imageProfile(String email, CompletedFileUpload arquivo);
+    UserProfileModel userProfile(String email);
 }

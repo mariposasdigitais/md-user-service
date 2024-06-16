@@ -11,6 +11,7 @@ import mariposas.model.MentorProfileModel;
 import mariposas.model.PasswordModel;
 import mariposas.model.ResponseModel;
 import mariposas.model.UserModel;
+import mariposas.model.UserProfileModel;
 import mariposas.service.JwtService;
 import mariposas.service.UserService;
 
@@ -28,12 +29,8 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseModel changePassword(String token, PasswordModel passwordModel) {
-        if (jwtService.validate(token, passwordModel.getEmail()) && jwtService.isValid(token)) {
-            return userService.changePassword(passwordModel);
-        } else {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
-        }
+    public ResponseModel changePassword(PasswordModel passwordModel) {
+        return userService.changePassword(passwordModel);
     }
 
     @Override
@@ -82,6 +79,15 @@ public class UserController implements UserApi {
     public ResponseModel mentorProfile(String token, MentorProfileModel mentorProfileModel) {
         if (jwtService.validate(token, mentorProfileModel.getEmail()) && jwtService.isValid(token)) {
             return userService.mentorProfile(mentorProfileModel);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+    }
+
+    @Override
+    public UserProfileModel userProfile(String token, String email) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return userService.userProfile(email);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
