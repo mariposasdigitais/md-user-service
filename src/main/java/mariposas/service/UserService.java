@@ -16,9 +16,9 @@ public interface UserService {
 
     LoginResponseModel login(LoginModel loginRequest);
 
-    ResponseModel menteeProfile(MenteeProfileModel menteeProfileModel);
+    ResponseModel menteeProfile(String email, MenteeProfileModel menteeProfileModel);
 
-    ResponseModel mentorProfile(MentorProfileModel mentorProfileModel);
+    ResponseModel mentorProfile(String email, MentorProfileModel mentorProfileModel);
 
     ResponseModel changePassword(PasswordModel passwordModel);
 

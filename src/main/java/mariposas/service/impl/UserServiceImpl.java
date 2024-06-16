@@ -4,6 +4,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 import mariposas.exception.BaseException;
 import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
@@ -66,6 +67,7 @@ public class UserServiceImpl implements UserService {
         this.s3Service = s3Service;
     }
 
+    @Transactional
     @Override
     public ResponseModel createUser(UserModel userRequest) {
         try {
@@ -111,6 +113,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public LoginResponseModel login(LoginModel loginRequest) {
         try {
@@ -131,10 +134,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
-    public ResponseModel menteeProfile(MenteeProfileModel menteeProfileModel) {
+    public ResponseModel menteeProfile(String email, MenteeProfileModel menteeProfileModel) {
         try {
-            var existingUser = userRepository.findByEmail(menteeProfileModel.getEmail());
+            var existingUser = userRepository.findByEmail(email);
 
             if (existingUser != null) {
                 var user = menteesRepository.findByUserId(existingUser);
@@ -142,16 +146,15 @@ public class UserServiceImpl implements UserService {
                     var data = MenteesEntity.builder()
                             .id(user.getId())
                             .userId(existingUser)
-                            .menteeLevelId(menteeProfileModel.getMenteeLevel().getValue())
-                            .isSponsored(menteeProfileModel.getIsSponsored())
+                            .menteeLevelId(menteeProfileModel.getMenteeLevel() != null ? menteeProfileModel.getMenteeLevel().getValue() : null)
                             .build();
 
                     menteesRepository.update(data);
 
                     var profile = UserEntity.builder()
                             .id(existingUser.getId())
-                            .profile(menteeProfileModel.getProfile())
-                            .age(menteeProfileModel.getAge())
+                            .profile(menteeProfileModel.getProfile() != null ? menteeProfileModel.getProfile() : null)
+                            .age(menteeProfileModel.getAge() != null ? menteeProfileModel.getAge() : null)
                             .name(existingUser.getName())
                             .email(existingUser.getEmail())
                             .phone(existingUser.getPhone())
@@ -172,10 +175,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
-    public ResponseModel mentorProfile(MentorProfileModel mentorProfileModel) {
+    public ResponseModel mentorProfile(String email, MentorProfileModel mentorProfileModel) {
         try {
-            var existingUser = userRepository.findByEmail(mentorProfileModel.getEmail());
+            var existingUser = userRepository.findByEmail(email);
 
             if (existingUser != null) {
                 var user = mentorsRepository.findByUserId(existingUser);
@@ -183,16 +187,16 @@ public class UserServiceImpl implements UserService {
                     var data = MentorsEntity.builder()
                             .id(user.getId())
                             .userId(existingUser)
-                            .education(mentorProfileModel.getEducation())
-                            .mentoringCapacity(mentorProfileModel.getMentoringCapacity().getValue())
+                            .education(mentorProfileModel.getEducation() != null ? mentorProfileModel.getEducation() : null)
+                            .mentoringCapacity(mentorProfileModel.getMentoringCapacity() != null ? mentorProfileModel.getMentoringCapacity().getValue() : null)
                             .build();
 
                     mentorsRepository.update(data);
 
                     var profile = UserEntity.builder()
                             .id(existingUser.getId())
-                            .profile(mentorProfileModel.getProfile())
-                            .age(mentorProfileModel.getAge())
+                            .profile(mentorProfileModel.getProfile() != null ? mentorProfileModel.getProfile() : null)
+                            .age(mentorProfileModel.getAge() != null ? mentorProfileModel.getAge() : null)
                             .name(existingUser.getName())
                             .email(existingUser.getEmail())
                             .phone(existingUser.getPhone())
@@ -213,6 +217,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseModel changePassword(PasswordModel passwordModel) {
         try {
@@ -223,6 +228,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseModel deleteUser(String email) {
         try {
@@ -264,6 +270,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseModel logout(String token) {
         try {
@@ -275,6 +282,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseModel imageProfile(String email, CompletedFileUpload arquivo) {
         try {
@@ -305,6 +313,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
     @Override
     public UserProfileModel userProfile(String email) {
         try {

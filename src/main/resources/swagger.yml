@@ -146,6 +146,7 @@ paths:
       operationId: menteeProfile
       parameters:
         - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
       requestBody:
         required: false
         content:
@@ -176,6 +177,7 @@ paths:
       operationId: mentorProfile
       parameters:
         - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
       requestBody:
         required: false
         content:
@@ -497,15 +499,9 @@ components:
 
     MenteeProfileModel:
       properties:
-        email:
-          type: string
-          example: mariaeugenia@email.com
         profile:
           type: string
           example: Olá, sou a Maria Eugênia [...]
-        isSponsored:
-          type: boolean
-          default: false
         age:
           type: string
           example: 24
@@ -516,9 +512,6 @@ components:
 
     MentorProfileModel:
       properties:
-        email:
-          type: string
-          example: mariaeugenia@email.com
         education:
           type: string
           example: Bacharelado em Sistemas de Informação
