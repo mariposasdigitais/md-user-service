@@ -19,6 +19,7 @@ public class AppConstant {
     public static final String SPONSORSHIP_CANCEL_SUCCESS = "Apadrinhamento cancelado com sucesso";
     public static final String SPONSORSHIP_CANCEL_ERROR = "Erro ao cancelar apadrinhamento";
     public static final String GET_MENTOR_ERROR = "Erro ao buscar perfil de mentora";
+    public static final String FORGOT_PASSWORD = "Um link de redefinição será enviado para o e-mail informado caso o mesmo se encontre na base.";
 
     public static final String BUCKET_PATH = "profile-images/";
     public static final String IMAGE_NAME = "MD_IMAGE_%s.png";

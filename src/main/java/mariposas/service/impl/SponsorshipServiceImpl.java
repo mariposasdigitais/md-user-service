@@ -12,6 +12,7 @@ import mariposas.model.MentorshipEntity;
 import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
+import mariposas.model.SponsorshipNotificationModel;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
 import mariposas.repository.MentorshipRepository;
@@ -53,6 +54,7 @@ public class SponsorshipServiceImpl implements SponsorshipService {
         this.s3Service = s3Service;
     }
 
+    @Transactional
     @Override
     public PaginatedMentees getMenteesList(Integer limit, Integer page) {
         Pageable pageable = Pageable.from(page - 1, limit);
@@ -167,6 +169,45 @@ public class SponsorshipServiceImpl implements SponsorshipService {
             mentor.setImage(imageBytes);
 
             return mentor;
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
+        }
+    }
+
+    @Transactional
+    @Override
+    public SponsorshipNotificationModel sponsorshipNotification(String email) {
+        try {
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            var mentee = menteesRepository.findByUserId(existingUser);
+            var mentorship = mentorshipRepository.findByMenteeId(mentee);
+
+            var sponsorshipNotification = new SponsorshipNotificationModel();
+
+            if (mentorship != null) {
+                var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
+                sponsorshipNotification.setEmail(mentor.getEmail());
+                sponsorshipNotification.setName(mentor.getName());
+
+                if (mentor.getImage() != null) {
+                    var filename = new String(mentor.getImage());
+                    var imageBytes = s3Service.getImageFile(filename);
+                    sponsorshipNotification.setImage(imageBytes);
+                }
+
+                sponsorshipNotification.setPhone(mentor.getPhone());
+                sponsorshipNotification.setProfile(mentor.getProfile());
+                sponsorshipNotification.setAge(mentor.getAge());
+                sponsorshipNotification.setEducation(mentor.getEducation());
+            }
+
+            return sponsorshipNotification;
 
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);

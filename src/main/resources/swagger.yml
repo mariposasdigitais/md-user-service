@@ -266,6 +266,29 @@ paths:
         '500':
           description: Internal Server Error
 
+    get:
+      tags:
+        - User
+      summary: Forgot password
+      operationId: forgotPassword
+      parameters:
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
   /sponsorship:
     post:
       tags:
@@ -364,6 +387,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MentorModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /sponsorship/notification:
+    get:
+      tags:
+        - Sponsorship
+      summary: Sponsorship notification
+      operationId: sponsorshipNotification
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Sponsorship notification successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipNotificationModel'
         '400':
           description: Bad request
         '404':
@@ -603,6 +651,31 @@ components:
         image:
           type: string
           format: byte
+
+    SponsorshipNotificationModel:
+      type: object
+      properties:
+        email:
+          type: string
+          example: mariaeugenia@gmail.com
+        name:
+          type: string
+          example: Maria Eugênia
+        image:
+          type: string
+          format: byte
+        phone:
+          type: string
+          example: 31995236485
+        profile:
+          type: string
+          example: Olá, sou a Maria Eugênia [...]
+        age:
+          type: string
+          example: 24
+        education:
+          type: string
+          example: Bacharelado em Sistemas de Informação
 
     ResponseModel:
       type: object

@@ -28,4 +28,5 @@ public interface UserService {
 
     ResponseModel imageProfile(String email, CompletedFileUpload arquivo);
     UserProfileModel userProfile(String email);
+    ResponseModel forgotPassword(String email);
 }
