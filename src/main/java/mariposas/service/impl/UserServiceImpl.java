@@ -23,6 +23,7 @@ import mariposas.repository.MentorsRepository;
 import mariposas.repository.MentorshipRepository;
 import mariposas.repository.UserRepository;
 import mariposas.service.AwsCognitoService;
+import mariposas.service.EmailService;
 import mariposas.service.JwtService;
 import mariposas.service.S3Service;
 import mariposas.service.UserService;
@@ -50,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private final AwsCognitoService awsCognitoService;
     private final JwtService jwtService;
     private final S3Service s3Service;
+    private final EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository,
                            MentorsRepository mentorsRepository,
@@ -57,7 +59,8 @@ public class UserServiceImpl implements UserService {
                            MentorshipRepository mentorshipRepository,
                            AwsCognitoService awsCognitoService,
                            JwtService jwtService,
-                           S3Service s3Service) {
+                           S3Service s3Service,
+                           EmailService emailService) {
 
         this.userRepository = userRepository;
         this.mentorsRepository = mentorsRepository;
@@ -66,6 +69,7 @@ public class UserServiceImpl implements UserService {
         this.awsCognitoService = awsCognitoService;
         this.jwtService = jwtService;
         this.s3Service = s3Service;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -106,6 +110,8 @@ public class UserServiceImpl implements UserService {
 
                 menteesRepository.save(mentee);
             }
+
+            emailService.confirmEmail(userRequest.getEmail());
 
             return buildResponse(USER_CREATED);
 
@@ -379,6 +385,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseModel forgotPassword(String email) {
         try {
+            emailService.forgotPasswordEmail(email);
             return buildResponse(FORGOT_PASSWORD);
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());

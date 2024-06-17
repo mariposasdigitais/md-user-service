@@ -421,6 +421,62 @@ paths:
         '500':
           description: Internal Server Error
 
+  /contact:
+    post:
+      tags:
+        - Contact
+      summary: Contact us
+      operationId: contactUs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactModel'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /contact/internal:
+    post:
+      tags:
+        - Contact
+      summary: Help
+      operationId: help
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelpModel'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
 
 components:
   parameters:
@@ -676,6 +732,39 @@ components:
         education:
           type: string
           example: Bacharelado em Sistemas de Informação
+
+    ContactModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        phone:
+          type: string
+          example: 31995236485
+        message:
+          type: string
+          example: Gostaria de patrocinar o projeto [...]
+
+    HelpModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Eugênia Nascimento
+        email:
+          type: string
+          example: mariaeugenia@email.com
+        userType:
+          type: string
+          example: AFILHADA
+        message:
+          type: string
+          example: Tive um problema na minha conta [...]
+
 
     ResponseModel:
       type: object
