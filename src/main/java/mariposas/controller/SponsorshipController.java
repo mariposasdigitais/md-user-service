@@ -2,14 +2,17 @@ package mariposas.controller;
 
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
+import jakarta.validation.Valid;
 import mariposas.exception.BaseException;
+import mariposas.model.MenteesModelInner;
 import mariposas.model.MentorModel;
-import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
 import mariposas.service.JwtService;
 import mariposas.service.SponsorshipService;
+
+import java.util.List;
 
 import static mariposas.constant.AppConstant.LOGIN_FAIL;
 
@@ -33,18 +36,18 @@ public class SponsorshipController implements SponsorshipApi {
     }
 
     @Override
-    public PaginatedMentees getMenteesList(String token, String email, Integer limit, Integer page) {
+    public List<@Valid MenteesModelInner> getMenteesList(String token, String email) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
-            return sponsorshipService.getMenteesList(limit, page);
+            return sponsorshipService.getMenteesList();
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
     }
 
     @Override
-    public PaginatedMentees getMentorMenteesList(String token, String email, Integer limit, Integer page) {
+    public List<@Valid MenteesModelInner> getMentorMenteesList(String token, String email) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
-            return sponsorshipService.getMentorMenteesList(email, limit, page);
+            return sponsorshipService.getMentorMenteesList(email);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }

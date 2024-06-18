@@ -352,8 +352,6 @@ paths:
       operationId: getMenteesList
       parameters:
         - $ref: '#/components/parameters/token'
-        - $ref: '#/components/parameters/limitQuery'
-        - $ref: '#/components/parameters/pageQuery'
         - $ref: '#/components/parameters/email'
       responses:
         '200':
@@ -361,7 +359,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedMentees'
+                $ref: '#/components/schemas/MenteesModel'
         '400':
           description: Bad request
         '404':
@@ -379,8 +377,6 @@ paths:
       operationId: getMentorMenteesList
       parameters:
         - $ref: '#/components/parameters/token'
-        - $ref: '#/components/parameters/limitQuery'
-        - $ref: '#/components/parameters/pageQuery'
         - $ref: '#/components/parameters/email'
       responses:
         '200':
@@ -388,7 +384,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedMentees'
+                $ref: '#/components/schemas/MenteesModel'
         '400':
           description: Bad request
         '404':
@@ -539,27 +535,27 @@ components:
       schema:
         type: string
 
-    limitQuery:
-      name: limit
-      in: query
-      required: false
-      description: Number of records per page
-      schema:
-        type: integer
-        example: 2
-        minimum: 2
-        default: 2
+    # limitQuery:
+    #   name: limit
+    #   in: query
+    #   required: false
+    #   description: Number of records per page
+    #   schema:
+    #     type: integer
+    #     example: 2
+    #     minimum: 2
+    #     default: 2
 
-    pageQuery:
-      name: page
-      in: query
-      required: false
-      description: Current page
-      schema:
-        type: integer
-        example: 1
-        minimum: 1
-        default: 1
+    # pageQuery:
+    #   name: page
+    #   in: query
+    #   required: false
+    #   description: Current page
+    #   schema:
+    #     type: integer
+    #     example: 1
+    #     minimum: 1
+    #     default: 1
 
   schemas:
     UserModel:
@@ -659,46 +655,48 @@ components:
           example: Olá, sou a Maria Eugênia [...]
 
     MenteesModel:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Maria Eugênia Nascimento
-        email:
-          type: string
-          example: mariaeugenia@email.com
-        phone:
-          type: string
-          example: 31995236485
-        profile:
-          type: string
-          example: Olá, sou a Maria Eugênia [...]
-        age:
-          type: string
-          example: 24
-        menteeLevel:
-          type: string
-          example: LAGARTA
-        image:
-          type: string
-          format: byte
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Maria Eugênia Nascimento
+          email:
+            type: string
+            example: mariaeugenia@email.com
+          phone:
+            type: string
+            example: 31995236485
+          profile:
+            type: string
+            example: Olá, sou a Maria Eugênia [...]
+          age:
+            type: string
+            example: 24
+          menteeLevel:
+            type: string
+            example: LAGARTA
+          image:
+            type: string
+            format: byte
 
-    PaginatedMentees:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/MenteesModel'
-        currentPage:
-          type: integer
-          example: 1
-        totalRecords:
-          type: integer
-          example: 1
-        totalRecordsPerPage:
-          type: integer
-          example: 2
+    # PaginatedMentees:
+    #   type: object
+    #   properties:
+    #     data:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/MenteesModel'
+    #     currentPage:
+    #       type: integer
+    #       example: 1
+    #     totalRecords:
+    #       type: integer
+    #       example: 1
+    #     totalRecordsPerPage:
+    #       type: integer
+    #       example: 2
 
     SponsorshipModel:
       type: object

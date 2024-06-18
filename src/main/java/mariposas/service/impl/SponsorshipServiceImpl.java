@@ -1,15 +1,12 @@
 package mariposas.service.impl;
 
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpStatus;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import mariposas.exception.BaseException;
-import mariposas.model.MenteesModel;
+import mariposas.model.MenteesModelInner;
 import mariposas.model.MentorModel;
 import mariposas.model.MentorshipEntity;
-import mariposas.model.PaginatedMentees;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
@@ -56,13 +53,12 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
     @Transactional
     @Override
-    public PaginatedMentees getMenteesList(Integer limit, Integer page) {
-        Pageable pageable = Pageable.from(page - 1, limit);
-        Page<MenteesModel> menteePage = menteesRepository.findAllMentees(pageable);
+    public List<MenteesModelInner> getMenteesList() {
+        var mentee = menteesRepository.findAllMentees();
 
-        List<MenteesModel> listMentees = new ArrayList<>();
+        List<MenteesModelInner> listMentees = new ArrayList<>();
 
-        for (MenteesModel menteesModel : menteePage.getContent()) {
+        for (MenteesModelInner menteesModel : mentee) {
             if (menteesModel.getImage() != null) {
                 var filename = new String(menteesModel.getImage());
                 var imageBytes = s3Service.getImageFile(filename);
@@ -72,13 +68,7 @@ public class SponsorshipServiceImpl implements SponsorshipService {
             listMentees.add(menteesModel);
         }
 
-        var paginatedMentees = new PaginatedMentees();
-        paginatedMentees.setData(listMentees);
-        paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
-        paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
-        paginatedMentees.setTotalRecordsPerPage(menteePage.getSize());
-
-        return paginatedMentees;
+        return listMentees;
     }
 
     @Transactional
@@ -217,7 +207,7 @@ public class SponsorshipServiceImpl implements SponsorshipService {
     }
 
     @Override
-    public PaginatedMentees getMentorMenteesList(String email, Integer limit, Integer page) {
+    public List<MenteesModelInner> getMentorMenteesList(String email) {
         var existingUser = userRepository.findByEmail(email);
 
         if (existingUser == null) {
@@ -225,13 +215,11 @@ public class SponsorshipServiceImpl implements SponsorshipService {
         }
 
         var mentor = mentorsRepository.findByUserId(existingUser);
+        var listMentee = menteesRepository.findMenteesForMentor(mentor.getId());
 
-        Pageable pageable = Pageable.from(page - 1, limit);
-        Page<MenteesModel> menteePage = menteesRepository.findMenteesForMentor(mentor.getId(), pageable);
+        List<MenteesModelInner> listMentees = new ArrayList<>();
 
-        List<MenteesModel> listMentees = new ArrayList<>();
-
-        for (MenteesModel menteesModel : menteePage.getContent()) {
+        for (MenteesModelInner menteesModel : listMentee) {
             if (menteesModel.getImage() != null) {
                 var filename = new String(menteesModel.getImage());
                 var imageBytes = s3Service.getImageFile(filename);
@@ -241,13 +229,7 @@ public class SponsorshipServiceImpl implements SponsorshipService {
             listMentees.add(menteesModel);
         }
 
-        PaginatedMentees paginatedMentees = new PaginatedMentees();
-        paginatedMentees.setData(listMentees);
-        paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
-        paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
-        paginatedMentees.setTotalRecordsPerPage(menteePage.getSize());
-
-        return paginatedMentees;
+        return listMentees;
     }
 
     private ResponseModel buildResponse(String message) {
