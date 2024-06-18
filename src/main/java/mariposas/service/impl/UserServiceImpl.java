@@ -153,15 +153,15 @@ public class UserServiceImpl implements UserService {
                     var data = MenteesEntity.builder()
                             .id(user.getId())
                             .userId(existingUser)
-                            .menteeLevelId(menteeProfileModel.getMenteeLevel() != null ? menteeProfileModel.getMenteeLevel().getValue() : null)
+                            .menteeLevelId(menteeProfileModel.getMenteeLevel() != null ? menteeProfileModel.getMenteeLevel().getValue() : user.getMenteeLevelId())
                             .build();
 
                     menteesRepository.update(data);
 
                     var profile = UserEntity.builder()
                             .id(existingUser.getId())
-                            .profile(menteeProfileModel.getProfile() != null ? menteeProfileModel.getProfile() : null)
-                            .age(menteeProfileModel.getAge() != null ? menteeProfileModel.getAge() : null)
+                            .profile(menteeProfileModel.getProfile() != null ? menteeProfileModel.getProfile() : existingUser.getProfile())
+                            .age(menteeProfileModel.getAge() != null ? menteeProfileModel.getAge() : existingUser.getAge())
                             .name(existingUser.getName())
                             .email(existingUser.getEmail())
                             .phone(existingUser.getPhone())
@@ -194,19 +194,20 @@ public class UserServiceImpl implements UserService {
                     var data = MentorsEntity.builder()
                             .id(user.getId())
                             .userId(existingUser)
-                            .education(mentorProfileModel.getEducation() != null ? mentorProfileModel.getEducation() : null)
-                            .mentoringCapacity(mentorProfileModel.getMentoringCapacity() != null ? mentorProfileModel.getMentoringCapacity().getValue() : null)
+                            .education(mentorProfileModel.getEducation() != null ? mentorProfileModel.getEducation() : user.getEducation())
+                            .mentoringCapacity(mentorProfileModel.getMentoringCapacity() != null ? mentorProfileModel.getMentoringCapacity().getValue() : user.getMentoringCapacity())
                             .build();
 
                     mentorsRepository.update(data);
 
                     var profile = UserEntity.builder()
                             .id(existingUser.getId())
-                            .profile(mentorProfileModel.getProfile() != null ? mentorProfileModel.getProfile() : null)
-                            .age(mentorProfileModel.getAge() != null ? mentorProfileModel.getAge() : null)
+                            .profile(mentorProfileModel.getProfile() != null ? mentorProfileModel.getProfile() : existingUser.getProfile())
+                            .age(mentorProfileModel.getAge() != null ? mentorProfileModel.getAge() : existingUser.getAge())
                             .name(existingUser.getName())
                             .email(existingUser.getEmail())
                             .phone(existingUser.getPhone())
+                            .image(existingUser.getImage())
                             .isMentor(existingUser.getIsMentor())
                             .build();
 

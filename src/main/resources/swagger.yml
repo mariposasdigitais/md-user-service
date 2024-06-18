@@ -375,6 +375,33 @@ paths:
     get:
       tags:
         - Sponsorship
+      summary: Obtain a list of a godmother's goddaughters
+      operationId: getMentorMenteesList
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/limitQuery'
+        - $ref: '#/components/parameters/pageQuery'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMentees'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /sponsorship/profile/mentor:
+    get:
+      tags:
+        - Sponsorship
       summary: Get the profile of the mentor who sponsored her
       operationId: getMentorProfile
       parameters:

@@ -15,5 +15,8 @@ public interface SponsorshipService {
     ResponseModel cancelSponsorship(String emailMentee, String emailMentor);
 
     MentorModel getMentorProfile(String email);
+
     SponsorshipNotificationModel sponsorshipNotification(String email);
+
+    PaginatedMentees getMentorMenteesList(String email, Integer limit, Integer page);
 }

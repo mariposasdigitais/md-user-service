@@ -35,6 +35,21 @@ public class AppConstant {
             "FROM public.users u JOIN public.mentees m ON u.id = m.user_id " +
             "JOIN public.mentee_level ml on m.mentee_level_id = ml.id " +
             "WHERE m.is_sponsored  = false";
+
+    public static final String QUERY_GET_MENTEES_FOR_MENTOR = "SELECT u.name, u.email, u.phone, u.profile, " +
+            "u.age, u.image, ml.\"level\" AS menteeLevel " +
+            "FROM public.users u " +
+            "JOIN public.mentees m on u.id = m.user_id " +
+            "JOIN public.mentorship mp on m.id = mp.mentee_id " +
+            "JOIN public.mentors mt on mp.mentor_id = mt.id " +
+            "JOIN public.mentee_level ml on m.mentee_level_id = ml.id " +
+            "WHERE mt.id = :id";
+
+    public static final String QUERY_COUNT_MENTEES_FOR_MENTOR = "SELECT COUNT(m) FROM public.mentees m " +
+            "JOIN public.mentorship mp ON m.id = mp.mentee_id " +
+            "JOIN public.mentors mt ON mp.mentor_id = mt.id " +
+            "WHERE mt.id = :id";
+
     public static final String QUERY_COUNT_MENTEES = "SELECT COUNT(*) FROM public.mentees";
 
     public static final String QUERY_GET_MENTOR = "SELECT u.name, u.email, u.phone, u.profile, u.age, u.image " +

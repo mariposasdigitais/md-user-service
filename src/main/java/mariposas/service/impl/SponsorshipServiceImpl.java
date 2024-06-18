@@ -63,18 +63,20 @@ public class SponsorshipServiceImpl implements SponsorshipService {
         List<MenteesModel> listMentees = new ArrayList<>();
 
         for (MenteesModel menteesModel : menteePage.getContent()) {
-            var filename = new String(menteesModel.getImage());
-            var imageBytes = s3Service.getImageFile(filename);
-            menteesModel.setImage(imageBytes);
+            if (menteesModel.getImage() != null) {
+                var filename = new String(menteesModel.getImage());
+                var imageBytes = s3Service.getImageFile(filename);
+                menteesModel.setImage(imageBytes);
+            }
 
             listMentees.add(menteesModel);
         }
 
         var paginatedMentees = new PaginatedMentees();
-        paginatedMentees.data(listMentees);
+        paginatedMentees.setData(listMentees);
         paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
-        paginatedMentees.totalRecordsPerPage(limit);
         paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
+        paginatedMentees.setTotalRecordsPerPage(menteePage.getSize());
 
         return paginatedMentees;
     }
@@ -212,6 +214,40 @@ public class SponsorshipServiceImpl implements SponsorshipService {
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
         }
+    }
+
+    @Override
+    public PaginatedMentees getMentorMenteesList(String email, Integer limit, Integer page) {
+        var existingUser = userRepository.findByEmail(email);
+
+        if (existingUser == null) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+        }
+
+        var mentor = mentorsRepository.findByUserId(existingUser);
+
+        Pageable pageable = Pageable.from(page - 1, limit);
+        Page<MenteesModel> menteePage = menteesRepository.findMenteesForMentor(mentor.getId(), pageable);
+
+        List<MenteesModel> listMentees = new ArrayList<>();
+
+        for (MenteesModel menteesModel : menteePage.getContent()) {
+            if (menteesModel.getImage() != null) {
+                var filename = new String(menteesModel.getImage());
+                var imageBytes = s3Service.getImageFile(filename);
+                menteesModel.setImage(imageBytes);
+            }
+
+            listMentees.add(menteesModel);
+        }
+
+        PaginatedMentees paginatedMentees = new PaginatedMentees();
+        paginatedMentees.setData(listMentees);
+        paginatedMentees.setCurrentPage(menteePage.getPageNumber() + 1);
+        paginatedMentees.setTotalRecords((int) menteePage.getTotalSize());
+        paginatedMentees.setTotalRecordsPerPage(menteePage.getSize());
+
+        return paginatedMentees;
     }
 
     private ResponseModel buildResponse(String message) {

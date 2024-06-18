@@ -42,6 +42,15 @@ public class SponsorshipController implements SponsorshipApi {
     }
 
     @Override
+    public PaginatedMentees getMentorMenteesList(String token, String email, Integer limit, Integer page) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return sponsorshipService.getMentorMenteesList(email, limit, page);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+    }
+
+    @Override
     public MentorModel getMentorProfile(String token, String email) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMentorProfile(email);
