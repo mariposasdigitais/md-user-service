@@ -86,7 +86,7 @@ public class EmailServiceImpl implements EmailService {
                     .concat("\n").concat(contactModel.getMessage());
 
             var request = SendEmailRequest.builder()
-                    .source(contactModel.getEmail())
+                    .source(EMAIL_MARIPOSAS)
                     .destination(dest -> dest.toAddresses(EMAIL_MARIPOSAS))
                     .message(msg -> msg
                             .subject(sub -> sub.data("Fale conosco | Mariposas Digitais"))
