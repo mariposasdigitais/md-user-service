@@ -3,7 +3,7 @@ micronaut:
     name: md-user-service
   server:
     context-path: /api/md-user-service/v1
-  cors:
+    cors:
       enabled: true
   router:
     static-resources:
