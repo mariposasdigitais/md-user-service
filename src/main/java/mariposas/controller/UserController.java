@@ -98,11 +98,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public UserProfileModel userProfile(String token, String email) {
-        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
-            return userService.userProfile(email);
-        } else {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
-        }
+    public UserProfileModel userProfile(String email) {
+        return userService.userProfile(email);
     }
 }

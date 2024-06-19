@@ -120,7 +120,6 @@ paths:
       summary: Get user profile
       operationId: userProfile
       parameters:
-        - $ref: '#/components/parameters/token'
         - $ref: '#/components/parameters/email'
       responses:
         '200':
