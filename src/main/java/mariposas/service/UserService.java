@@ -11,6 +11,7 @@ import mariposas.model.UserModel;
 import mariposas.model.UserProfileModel;
 
 public interface UserService {
+    Boolean isMentor(String email);
 
     ResponseModel createUser(UserModel userRequest);
 
@@ -27,6 +28,8 @@ public interface UserService {
     ResponseModel logout(String token);
 
     ResponseModel imageProfile(String email, CompletedFileUpload arquivo);
+
     UserProfileModel userProfile(String email);
+
     ResponseModel forgotPassword(String email);
 }

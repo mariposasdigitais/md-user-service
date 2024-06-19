@@ -11,6 +11,7 @@ import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
 import mariposas.service.JwtService;
 import mariposas.service.SponsorshipService;
+import mariposas.service.UserService;
 
 import java.util.List;
 
@@ -20,14 +21,20 @@ import static mariposas.constant.AppConstant.LOGIN_FAIL;
 public class SponsorshipController implements SponsorshipApi {
     private final JwtService jwtService;
     private final SponsorshipService sponsorshipService;
+    private final UserService userService;
 
-    public SponsorshipController(JwtService jwtService, SponsorshipService sponsorshipService) {
+    public SponsorshipController(JwtService jwtService, SponsorshipService sponsorshipService, UserService userService) {
         this.jwtService = jwtService;
         this.sponsorshipService = sponsorshipService;
+        this.userService = userService;
     }
 
     @Override
     public ResponseModel cancelSponsorship(String token, String emailMentee, String emailMentor) {
+        if (!userService.isMentor(emailMentor)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, emailMentor) && jwtService.isValid(token)) {
             return sponsorshipService.cancelSponsorship(emailMentee, emailMentor);
         } else {
@@ -37,6 +44,10 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public List<@Valid MenteesModelInner> getMenteesList(String token, String email) {
+        if (!userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMenteesList();
         } else {
@@ -46,6 +57,10 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public List<@Valid MenteesModelInner> getMentorMenteesList(String token, String email) {
+        if (!userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMentorMenteesList(email);
         } else {
@@ -55,6 +70,10 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public MentorModel getMentorProfile(String token, String email) {
+        if (userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMentorProfile(email);
         } else {
@@ -64,6 +83,10 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public ResponseModel sponsoringMentee(String token, SponsorshipModel sponsorshipModel) {
+        if (!userService.isMentor(sponsorshipModel.getEmailMentor())) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, sponsorshipModel.getEmailMentor()) && jwtService.isValid(token)) {
             return sponsorshipService.sponsoringMentee(sponsorshipModel);
         } else {
@@ -73,6 +96,10 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public SponsorshipNotificationModel sponsorshipNotification(String token, String email) {
+        if (!userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.sponsorshipNotification(email);
         } else {

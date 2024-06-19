@@ -74,6 +74,23 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public Boolean isMentor(String email) {
+        try {
+            var user = userRepository.findByEmail(email);
+
+            if (user == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            return user.getIsMentor().equals(new BigDecimal(1));
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Transactional
+    @Override
     public ResponseModel createUser(UserModel userRequest) {
         try {
             var existingUser = userRepository.findByEmail(userRequest.getEmail());

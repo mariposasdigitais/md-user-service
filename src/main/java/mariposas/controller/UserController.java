@@ -73,6 +73,10 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseModel menteeProfile(String token, String email, MenteeProfileModel menteeProfileModel) {
+        if (userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return userService.menteeProfile(email, menteeProfileModel);
         } else {
@@ -82,6 +86,10 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseModel mentorProfile(String token, String email, MentorProfileModel mentorProfileModel) {
+        if (!userService.isMentor(email)) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return userService.mentorProfile(email, mentorProfileModel);
         } else {
