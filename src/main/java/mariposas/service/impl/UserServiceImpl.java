@@ -123,6 +123,7 @@ public class UserServiceImpl implements UserService {
                 var mentee = MenteesEntity.builder()
                         .userId(createdUser)
                         .isSponsored(false)
+                        .menteeLevelId(new BigDecimal(1))
                         .build();
 
                 menteesRepository.save(mentee);
