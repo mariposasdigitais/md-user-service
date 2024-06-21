@@ -171,6 +171,7 @@ public class UserServiceImpl implements UserService {
                     var data = MenteesEntity.builder()
                             .id(user.getId())
                             .userId(existingUser)
+                            .isSponsored(user.getIsSponsored())
                             .menteeLevelId(menteeProfileModel.getMenteeLevel() != null ? menteeProfileModel.getMenteeLevel().getValue() : user.getMenteeLevelId())
                             .build();
 
