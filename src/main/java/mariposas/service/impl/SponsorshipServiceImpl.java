@@ -9,6 +9,7 @@ import mariposas.model.MentorModel;
 import mariposas.model.MentorshipEntity;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
+import mariposas.model.SponsorshipNotificationMentorModel;
 import mariposas.model.SponsorshipNotificationModel;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static mariposas.constant.AppConstant.GET_MENTOR_ERROR;
+import static mariposas.constant.AppConstant.NOTIFICATION_MENTOR_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_SUCCESS;
 import static mariposas.constant.AppConstant.SPONSORSHIP_ERROR;
@@ -169,7 +171,7 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
     @Transactional
     @Override
-    public SponsorshipNotificationModel sponsorshipNotification(String email) {
+    public SponsorshipNotificationModel sponsorshipNotificationMentee(String email) {
         try {
             var existingUser = userRepository.findByEmail(email);
 
@@ -203,6 +205,44 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
+        }
+    }
+
+    @Override
+    public SponsorshipNotificationMentorModel sponsorshipNotificationMentor(String email) {
+        try {
+            var sponsorshipNotification = new SponsorshipNotificationMentorModel();
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            var mentee = menteesRepository.findAllMentees();
+            var mentor = mentorsRepository.findByUserId(existingUser);
+            var mentorship = mentorshipRepository.findByMentorId(mentor);
+
+            if (mentee == null || mentor == null || mentorship == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            var mentoringAvaliable = Integer.parseInt(mentor.getMentoringCapacity().toString()) - mentorship.size();
+
+            if (mentee.isEmpty()) {
+                sponsorshipNotification.isValid(false);
+                return sponsorshipNotification;
+            }
+
+            if (mentoringAvaliable != 0) {
+                sponsorshipNotification.isValid(true);
+                return sponsorshipNotification;
+            }
+
+            sponsorshipNotification.isValid(false);
+            return sponsorshipNotification;
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, NOTIFICATION_MENTOR_ERROR);
         }
     }
 

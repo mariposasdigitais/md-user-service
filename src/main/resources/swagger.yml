@@ -418,12 +418,12 @@ paths:
         '500':
           description: Internal Server Error
 
-  /sponsorship/notification:
+  /sponsorship/notification/mentee:
     get:
       tags:
         - Sponsorship
       summary: Sponsorship notification
-      operationId: sponsorshipNotification
+      operationId: sponsorshipNotificationMentee
       parameters:
         - $ref: '#/components/parameters/token'
         - $ref: '#/components/parameters/email'
@@ -434,6 +434,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SponsorshipNotificationModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+  /sponsorship/notification/mentor:
+    get:
+      tags:
+        - Sponsorship
+      summary: Checks that there are goddaughters available and that sponsorship capacity has not been exceeded
+      operationId: sponsorshipNotificationMentor
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Sponsorship notification successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SponsorshipNotificationMentorModel'
         '400':
           description: Bad request
         '404':
@@ -731,6 +756,13 @@ components:
         image:
           type: string
           format: byte
+
+    SponsorshipNotificationMentorModel:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+          example: true
 
     SponsorshipNotificationModel:
       type: object
