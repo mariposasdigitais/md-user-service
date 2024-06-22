@@ -9,7 +9,6 @@ import mariposas.model.MentorModel;
 import mariposas.model.MentorshipEntity;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
-import mariposas.model.SponsorshipNotificationMentorModel;
 import mariposas.model.SponsorshipNotificationModel;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static mariposas.constant.AppConstant.GET_MENTOR_ERROR;
-import static mariposas.constant.AppConstant.NOTIFICATION_MENTOR_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_SUCCESS;
 import static mariposas.constant.AppConstant.SPONSORSHIP_ERROR;
@@ -171,51 +169,40 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
     @Transactional
     @Override
-    public SponsorshipNotificationModel sponsorshipNotificationMentee(String email) {
+    public SponsorshipNotificationModel sponsorshipNotification(String email) {
         try {
             var existingUser = userRepository.findByEmail(email);
-
-            if (existingUser == null) {
-                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
-            }
-
-            var mentee = menteesRepository.findByUserId(existingUser);
-            var mentorship = mentorshipRepository.findByMenteeId(mentee);
-
             var sponsorshipNotification = new SponsorshipNotificationModel();
 
-            if (mentorship != null) {
-                var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
-                sponsorshipNotification.setEmail(mentor.getEmail());
-                sponsorshipNotification.setName(mentor.getName());
-
-                if (mentor.getImage() != null) {
-                    var filename = new String(mentor.getImage());
-                    var imageBytes = s3Service.getImageFile(filename);
-                    sponsorshipNotification.setImage(imageBytes);
-                }
-
-                sponsorshipNotification.setPhone(mentor.getPhone());
-                sponsorshipNotification.setProfile(mentor.getProfile());
-                sponsorshipNotification.setAge(mentor.getAge());
-                sponsorshipNotification.setEducation(mentor.getEducation());
-            }
-
-            return sponsorshipNotification;
-
-        } catch (Exception e) {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
-        }
-    }
-
-    @Override
-    public SponsorshipNotificationMentorModel sponsorshipNotificationMentor(String email) {
-        try {
-            var sponsorshipNotification = new SponsorshipNotificationMentorModel();
-            var existingUser = userRepository.findByEmail(email);
-
             if (existingUser == null) {
                 throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            if (existingUser.getIsMentor().equals(new BigDecimal(2))) {
+
+                var mentee = menteesRepository.findByUserId(existingUser);
+                var mentorship = mentorshipRepository.findByMenteeId(mentee);
+
+
+                if (mentorship != null) {
+                    var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
+                    sponsorshipNotification.setEmail(mentor.getEmail());
+                    sponsorshipNotification.setName(mentor.getName());
+
+                    if (mentor.getImage() != null) {
+                        var filename = new String(mentor.getImage());
+                        var imageBytes = s3Service.getImageFile(filename);
+                        sponsorshipNotification.setImage(imageBytes);
+                    }
+
+                    sponsorshipNotification.setPhone(mentor.getPhone());
+                    sponsorshipNotification.setProfile(mentor.getProfile());
+                    sponsorshipNotification.setAge(mentor.getAge());
+                    sponsorshipNotification.setEducation(mentor.getEducation());
+                    sponsorshipNotification.setIsNotification(null);
+                }
+
+                return sponsorshipNotification;
             }
 
             var mentee = menteesRepository.findAllMentees();
@@ -228,21 +215,26 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
             var mentoringAvaliable = Integer.parseInt(mentor.getMentoringCapacity().toString()) - mentorship.size();
 
+            sponsorshipNotification.setEmail(null);
+            sponsorshipNotification.setName(null);
+            sponsorshipNotification.setImage(null);
+            sponsorshipNotification.setPhone(null);
+            sponsorshipNotification.setProfile(null);
+            sponsorshipNotification.setAge(null);
+            sponsorshipNotification.setEducation(null);
+
             if (mentee.isEmpty()) {
-                sponsorshipNotification.isValid(false);
-                return sponsorshipNotification;
+                sponsorshipNotification.setIsNotification(false);
             }
 
             if (mentoringAvaliable != 0) {
-                sponsorshipNotification.isValid(true);
-                return sponsorshipNotification;
+                sponsorshipNotification.setIsNotification(true);
             }
 
-            sponsorshipNotification.isValid(false);
             return sponsorshipNotification;
 
         } catch (Exception e) {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, NOTIFICATION_MENTOR_ERROR);
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
         }
     }
 
