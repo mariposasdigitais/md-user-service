@@ -32,4 +32,6 @@ public interface UserService {
     UserProfileModel userProfile(String email);
 
     ResponseModel forgotPassword(String email);
+
+    ResponseModel fullProfile(String email);
 }

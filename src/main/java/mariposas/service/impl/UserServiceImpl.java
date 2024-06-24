@@ -10,6 +10,8 @@ import mariposas.model.LoginModel;
 import mariposas.model.LoginResponseModel;
 import mariposas.model.MenteeProfileModel;
 import mariposas.model.MenteesEntity;
+import mariposas.model.MenteesModelInner;
+import mariposas.model.MentorModelInner;
 import mariposas.model.MentorProfileModel;
 import mariposas.model.MentorsEntity;
 import mariposas.model.MentorshipEntity;
@@ -29,10 +31,13 @@ import mariposas.service.S3Service;
 import mariposas.service.UserService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static mariposas.constant.AppConstant.CHANGE_PASSWORD_SUCCESS;
 import static mariposas.constant.AppConstant.FORGOT_PASSWORD;
+import static mariposas.constant.AppConstant.GET_MENTOR_ERROR;
 import static mariposas.constant.AppConstant.IMAGEM_UPLOAD_SUCCESS;
 import static mariposas.constant.AppConstant.LOGIN_SUCCESS;
 import static mariposas.constant.AppConstant.LOGOUT_SUCCESS;
@@ -409,6 +414,39 @@ public class UserServiceImpl implements UserService {
             return buildResponse(FORGOT_PASSWORD);
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResponseModel fullProfile(String email) {
+        try {
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            if (existingUser.getIsMentor().equals(new BigDecimal(1))) {
+                var mentor = mentorsRepository.findByUserId(existingUser);
+                var fullProfile = existingUser.getAge() != null &&
+                        existingUser.getProfile() != null &&
+                        existingUser.getImage() != null &&
+                        mentor.getMentoringCapacity() != null &&
+                        mentor.getEducation() != null;
+
+                return buildResponse(String.valueOf(fullProfile));
+            }
+
+            var mentee = menteesRepository.findByUserId(existingUser);
+            var fullProfile = existingUser.getAge() != null &&
+                    existingUser.getProfile() != null &&
+                    existingUser.getImage() != null &&
+                    mentee.getMenteeLevelId() != null;
+
+            return buildResponse(String.valueOf(fullProfile));
+
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
         }
     }
 

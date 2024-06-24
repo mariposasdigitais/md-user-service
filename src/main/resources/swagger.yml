@@ -137,6 +137,32 @@ paths:
         '500':
           description: Internal Server Error
 
+  /user/profile/full:
+    get:
+      tags:
+        - User
+      summary: Check that the profile is filled in
+      operationId: fullProfile
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+
   /user/profile/mentee:
     post:
       tags:

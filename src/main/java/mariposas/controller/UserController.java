@@ -53,6 +53,15 @@ public class UserController implements UserApi {
     }
 
     @Override
+    public ResponseModel fullProfile(String token, String email) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return userService.fullProfile(email);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+    }
+
+    @Override
     public ResponseModel imageProfile(String token, String email, CompletedFileUpload arquivo) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return userService.imageProfile(email, arquivo);
