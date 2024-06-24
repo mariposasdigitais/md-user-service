@@ -5,7 +5,7 @@ import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import mariposas.exception.BaseException;
 import mariposas.model.MenteesModelInner;
-import mariposas.model.MentorModel;
+import mariposas.model.MentorModelInner;
 import mariposas.model.MentorshipEntity;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
@@ -145,22 +145,65 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
     @Transactional
     @Override
-    public MentorModel getMentorProfile(String email) {
+    public List<MentorModelInner> getMentorProfile(String email) {
         try {
-            var existingMentee = userRepository.findByEmail(email);
+            var existingUser = userRepository.findByEmail(email);
 
-            if (existingMentee == null) {
+            if (existingUser == null) {
                 throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
             }
 
-            var mentee = menteesRepository.findByUserId(existingMentee);
-            var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
+            if (existingUser.getIsMentor().equals(new BigDecimal(2))) {
 
-            var filename = new String(mentor.getImage());
-            var imageBytes = s3Service.getImageFile(filename);
-            mentor.setImage(imageBytes);
+                var mentee = menteesRepository.findByUserId(existingUser);
+                if (mentee != null) {
+                    var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
 
-            return mentor;
+                    if (mentor.size() != 0) {
+                        if (mentor.get(0).getImage() != null) {
+                            var filename = new String(mentor.get(0).getImage());
+                            var imageBytes = s3Service.getImageFile(filename);
+                            mentor.get(0).setImage(imageBytes);
+                        }
+
+                        return mentor;
+                    }
+                }
+
+                List<MentorModelInner> dataList = new ArrayList<>();
+                return dataList;
+            }
+
+            var mentor = mentorsRepository.findByUserId(existingUser);
+            var listMentee = menteesRepository.findMenteesForMentor(mentor.getId());
+
+            List<MentorModelInner> dataList = new ArrayList<>();
+            var data = new MentorModelInner();
+
+            if (!listMentee.isEmpty()) {
+
+                for (MenteesModelInner menteesModel : listMentee) {
+                    if (menteesModel.getImage() != null) {
+                        var filename = new String(menteesModel.getImage());
+                        var imageBytes = s3Service.getImageFile(filename);
+                        data.setImage(imageBytes);
+                    }
+
+                    data.setProfile(menteesModel.getProfile());
+                    data.setAge(menteesModel.getAge());
+                    data.setEducation(null);
+                    data.setEmail(menteesModel.getEmail());
+                    data.setName(menteesModel.getName());
+                    data.setMenteeLevel(menteesModel.getMenteeLevel());
+                    data.setPhone(menteesModel.getPhone());
+
+                    dataList.add(data);
+                }
+
+                return dataList;
+            }
+
+            return dataList;
 
         } catch (Exception e) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
@@ -186,19 +229,19 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
                 if (mentorship != null) {
                     var mentor = mentorsRepository.findMentorByMenteeId(mentee.getId());
-                    sponsorshipNotification.setEmail(mentor.getEmail());
-                    sponsorshipNotification.setName(mentor.getName());
+                    sponsorshipNotification.setEmail(mentor.get(0).getEmail());
+                    sponsorshipNotification.setName(mentor.get(0).getName());
 
-                    if (mentor.getImage() != null) {
-                        var filename = new String(mentor.getImage());
+                    if (mentor.get(0).getImage() != null) {
+                        var filename = new String(mentor.get(0).getImage());
                         var imageBytes = s3Service.getImageFile(filename);
                         sponsorshipNotification.setImage(imageBytes);
                     }
 
-                    sponsorshipNotification.setPhone(mentor.getPhone());
-                    sponsorshipNotification.setProfile(mentor.getProfile());
-                    sponsorshipNotification.setAge(mentor.getAge());
-                    sponsorshipNotification.setEducation(mentor.getEducation());
+                    sponsorshipNotification.setPhone(mentor.get(0).getPhone());
+                    sponsorshipNotification.setProfile(mentor.get(0).getProfile());
+                    sponsorshipNotification.setAge(mentor.get(0).getAge());
+                    sponsorshipNotification.setEducation(mentor.get(0).getEducation());
                     sponsorshipNotification.setIsNotification(null);
                 }
 

@@ -5,7 +5,7 @@ import io.micronaut.http.annotation.Controller;
 import jakarta.validation.Valid;
 import mariposas.exception.BaseException;
 import mariposas.model.MenteesModelInner;
-import mariposas.model.MentorModel;
+import mariposas.model.MentorModelInner;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
@@ -69,7 +69,7 @@ public class SponsorshipController implements SponsorshipApi {
     }
 
     @Override
-    public MentorModel getMentorProfile(String token, String email) {
+    public List<@Valid MentorModelInner> getMentorProfile(String token, String email) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMentorProfile(email);
         } else {

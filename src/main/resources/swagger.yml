@@ -393,11 +393,11 @@ paths:
         '500':
           description: Internal Server Error
 
-  /sponsorship/profile/mentor:
+  /sponsorship/profile:
     get:
       tags:
         - Sponsorship
-      summary: Get the profile of the mentor who sponsored her
+      summary: Get the profile of the mentor or mentee
       operationId: getMentorProfile
       parameters:
         - $ref: '#/components/parameters/token'
@@ -708,29 +708,34 @@ components:
           example: anastaciabatista@email.com
 
     MentorModel:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Maria Eugênia Nascimento
-        email:
-          type: string
-          example: mariaeugenia@email.com
-        phone:
-          type: string
-          example: 31995236485
-        profile:
-          type: string
-          example: Olá, sou a Maria Eugênia [...]
-        age:
-          type: string
-          example: 24
-        education:
-          type: string
-          example: Bacharelado em Sistemas de Informação
-        image:
-          type: string
-          format: byte
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Maria Eugênia Nascimento
+          email:
+            type: string
+            example: mariaeugenia@email.com
+          phone:
+            type: string
+            example: 31995236485
+          profile:
+            type: string
+            example: Olá, sou a Maria Eugênia [...]
+          age:
+            type: string
+            example: 24
+          education:
+            type: string
+            example: Bacharelado em Sistemas de Informação
+          image:
+            type: string
+            format: byte
+          menteeLevel:
+            type: string
+            example: LAGARTA
 
     SponsorshipNotificationModel:
       type: object

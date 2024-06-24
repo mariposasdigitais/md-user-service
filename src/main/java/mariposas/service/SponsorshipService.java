@@ -1,7 +1,8 @@
 package mariposas.service;
 
+import jakarta.validation.Valid;
 import mariposas.model.MenteesModelInner;
-import mariposas.model.MentorModel;
+import mariposas.model.MentorModelInner;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
@@ -16,7 +17,7 @@ public interface SponsorshipService {
 
     ResponseModel cancelSponsorship(String emailMentee, String emailMentor);
 
-    MentorModel getMentorProfile(String email);
+    List<MentorModelInner> getMentorProfile(String email);
 
     SponsorshipNotificationModel sponsorshipNotification(String email);
 
