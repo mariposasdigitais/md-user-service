@@ -178,11 +178,11 @@ public class SponsorshipServiceImpl implements SponsorshipService {
             var listMentee = menteesRepository.findMenteesForMentor(mentor.getId());
 
             List<MentorModelInner> dataList = new ArrayList<>();
-            var data = new MentorModelInner();
 
             if (!listMentee.isEmpty()) {
-
                 for (MenteesModelInner menteesModel : listMentee) {
+                    var data = new MentorModelInner(); // Cria uma nova instância a cada iteração
+
                     if (menteesModel.getImage() != null) {
                         var filename = new String(menteesModel.getImage());
                         var imageBytes = s3Service.getImageFile(filename);
@@ -199,8 +199,6 @@ public class SponsorshipServiceImpl implements SponsorshipService {
 
                     dataList.add(data);
                 }
-
-                return dataList;
             }
 
             return dataList;
