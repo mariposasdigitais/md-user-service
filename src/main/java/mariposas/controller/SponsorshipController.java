@@ -70,10 +70,6 @@ public class SponsorshipController implements SponsorshipApi {
 
     @Override
     public MentorModel getMentorProfile(String token, String email) {
-        if (userService.isMentor(email)) {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
-        }
-
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
             return sponsorshipService.getMentorProfile(email);
         } else {
