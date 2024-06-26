@@ -4,12 +4,15 @@ import io.micronaut.http.HttpStatus;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import mariposas.exception.BaseException;
+import mariposas.model.InvalidMenteeEntity;
+import mariposas.model.InvalidMenteeModelInner;
 import mariposas.model.MenteesModelInner;
 import mariposas.model.MentorModelInner;
 import mariposas.model.MentorshipEntity;
 import mariposas.model.ResponseModel;
 import mariposas.model.SponsorshipModel;
 import mariposas.model.SponsorshipNotificationModel;
+import mariposas.repository.InvalidMenteeRepository;
 import mariposas.repository.MenteesRepository;
 import mariposas.repository.MentorsRepository;
 import mariposas.repository.MentorshipRepository;
@@ -20,12 +23,14 @@ import mariposas.service.SponsorshipService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static mariposas.constant.AppConstant.GET_MENTOR_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_CANCEL_SUCCESS;
 import static mariposas.constant.AppConstant.SPONSORSHIP_ERROR;
 import static mariposas.constant.AppConstant.SPONSORSHIP_SUCCESS;
+import static mariposas.constant.AppConstant.SUCESS_INVALID_LIST;
 import static mariposas.constant.AppConstant.USERS_NOT_FOUND;
 import static mariposas.constant.AppConstant.USER_NOT_FOUND;
 
@@ -36,39 +41,66 @@ public class SponsorshipServiceImpl implements SponsorshipService {
     private final MenteesRepository menteesRepository;
     private final MentorshipRepository mentorshipRepository;
     private final S3Service s3Service;
+    private final InvalidMenteeRepository invalidMenteeRepository;
 
 
     public SponsorshipServiceImpl(UserRepository userRepository,
                                   MentorsRepository mentorsRepository,
                                   MenteesRepository menteesRepository,
                                   MentorshipRepository mentorshipRepository,
-                                  S3Service s3Service) {
+                                  S3Service s3Service,
+                                  InvalidMenteeRepository invalidMenteeRepository) {
 
         this.userRepository = userRepository;
         this.mentorsRepository = mentorsRepository;
         this.menteesRepository = menteesRepository;
         this.mentorshipRepository = mentorshipRepository;
         this.s3Service = s3Service;
+        this.invalidMenteeRepository = invalidMenteeRepository;
     }
 
     @Transactional
     @Override
-    public List<MenteesModelInner> getMenteesList() {
-        var mentee = menteesRepository.findAllMentees();
+    public List<MenteesModelInner> getMenteesList(String email) {
+        try {
+            var existingUser = userRepository.findByEmail(email);
 
-        List<MenteesModelInner> listMentees = new ArrayList<>();
-
-        for (MenteesModelInner menteesModel : mentee) {
-            if (menteesModel.getImage() != null) {
-                var filename = new String(menteesModel.getImage());
-                var imageBytes = s3Service.getImageFile(filename);
-                menteesModel.setImage(imageBytes);
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
             }
 
-            listMentees.add(menteesModel);
-        }
+            var mentor = mentorsRepository.findByUserId(existingUser);
+            var invalidMentees = invalidMenteeRepository.findByMentorId(mentor.getId());
 
-        return listMentees;
+            if (invalidMentees == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            var mentee = menteesRepository.findAllMentees();
+
+            var invalidEmails = invalidMentees.stream()
+                    .map(InvalidMenteeModelInner::getEmailMentee)
+                    .toList();
+
+            var menteeList = mentee.stream()
+                    .filter(mentees -> !invalidEmails.contains(mentees.getEmail()))
+                    .toList();
+
+            List<MenteesModelInner> listMentees = new ArrayList<>();
+            for (MenteesModelInner menteesModel : menteeList) {
+                if (menteesModel.getImage() != null) {
+                    var filename = new String(menteesModel.getImage());
+                    var imageBytes = s3Service.getImageFile(filename);
+                    menteesModel.setImage(imageBytes);
+                }
+
+                listMentees.add(menteesModel);
+            }
+
+            return listMentees;
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
     }
 
     @Transactional
@@ -275,34 +307,73 @@ public class SponsorshipServiceImpl implements SponsorshipService {
             return sponsorshipNotification;
 
         } catch (Exception e) {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, GET_MENTOR_ERROR);
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
     }
 
+    @Transactional
     @Override
     public List<MenteesModelInner> getMentorMenteesList(String email) {
-        var existingUser = userRepository.findByEmail(email);
+        try {
+            var existingUser = userRepository.findByEmail(email);
 
-        if (existingUser == null) {
-            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
-        }
-
-        var mentor = mentorsRepository.findByUserId(existingUser);
-        var listMentee = menteesRepository.findMenteesForMentor(mentor.getId());
-
-        List<MenteesModelInner> listMentees = new ArrayList<>();
-
-        for (MenteesModelInner menteesModel : listMentee) {
-            if (menteesModel.getImage() != null) {
-                var filename = new String(menteesModel.getImage());
-                var imageBytes = s3Service.getImageFile(filename);
-                menteesModel.setImage(imageBytes);
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
             }
 
-            listMentees.add(menteesModel);
-        }
+            var mentor = mentorsRepository.findByUserId(existingUser);
+            var listMentee = menteesRepository.findMenteesForMentor(mentor.getId());
 
-        return listMentees;
+            List<MenteesModelInner> listMentees = new ArrayList<>();
+
+            for (MenteesModelInner menteesModel : listMentee) {
+                if (menteesModel.getImage() != null) {
+                    var filename = new String(menteesModel.getImage());
+                    var imageBytes = s3Service.getImageFile(filename);
+                    menteesModel.setImage(imageBytes);
+                }
+
+                listMentees.add(menteesModel);
+            }
+
+            return listMentees;
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
+    }
+
+    @Transactional
+    @Override
+    public ResponseModel invalidMentee(String email, List<InvalidMenteeModelInner> invalidMenteeModelInners) {
+        try {
+            var existingUser = userRepository.findByEmail(email);
+
+            if (existingUser == null) {
+                throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+            }
+
+            var mentor = mentorsRepository.findByUserId(existingUser);
+
+            for (InvalidMenteeModelInner mentee : invalidMenteeModelInners) {
+                var user = userRepository.findByEmail(mentee.getEmailMentee());
+
+                if (user == null) {
+                    throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, USER_NOT_FOUND);
+                }
+
+                var menteeModel = menteesRepository.findByUserId(user);
+                var menteeEntity = InvalidMenteeEntity.builder()
+                        .menteeId(menteeModel)
+                        .mentorId(mentor)
+                        .build();
+
+                invalidMenteeRepository.save(menteeEntity);
+            }
+
+            return buildResponse(SUCESS_INVALID_LIST);
+        } catch (Exception e) {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        }
     }
 
     private ResponseModel buildResponse(String message) {

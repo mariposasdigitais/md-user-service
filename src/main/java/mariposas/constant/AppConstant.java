@@ -21,6 +21,8 @@ public class AppConstant {
     public static final String GET_MENTOR_ERROR = "Erro ao buscar perfil de mentora";
     public static final String FORGOT_PASSWORD = "Um link de redefinição será enviado para o e-mail (verifique caixa de spam) informado caso o mesmo se encontre na base";
     public static final String SUCCESS_SEND_MESSAGE = "E-mail enviado com sucesso! Em breve retornaremos seu contato.";
+    public static final String SUCESS_INVALID_LIST = "Afilhadas rejeitadas salvas com sucesso";
+
 
     public static final String BUCKET_PATH = "profile-images/";
     public static final String IMAGE_NAME = "MD_IMAGE_%s.png";
@@ -48,6 +50,12 @@ public class AppConstant {
             "JOIN public.mentorship mp ON m.id = mp.mentee_id " +
             "JOIN public.mentors mt ON mp.mentor_id = mt.id " +
             "WHERE mt.id = :id";
+
+    public static final String QUERY_INVALID_MENTEES = "SELECT im.mentee_id, u.email AS emailMentee " +
+            "FROM public.invalid_mentee im " +
+            "JOIN public.mentees m on m.id = im.mentee_id " +
+            "JOIN public.users u on u.id = m.user_id " +
+            "WHERE im.mentor_id = :id";
 
     public static final String QUERY_COUNT_MENTEES = "SELECT COUNT(*) FROM public.mentees";
 

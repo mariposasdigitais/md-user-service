@@ -369,6 +369,37 @@ paths:
         '500':
           description: Internal Server Error
 
+  /sponsorship/invalid/mentee:
+    post:
+      tags:
+        - Sponsorship
+      summary: Skip to the next goddaughter
+      operationId: invalidMentee
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/email'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvalidMenteeModel'
+      responses:
+        '200':
+          description: List of mentees successfully returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseModel'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
   /sponsorship/mentee:
     get:
       tags:
@@ -732,6 +763,15 @@ components:
         emailMentor:
           type: string
           example: anastaciabatista@email.com
+
+    InvalidMenteeModel:
+      type: array
+      items:
+        type: object
+        properties:
+          emailMentee:
+            type: string
+            example: mariaeugenia@email.com
 
     MentorModel:
       type: array

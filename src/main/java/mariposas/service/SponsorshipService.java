@@ -1,6 +1,6 @@
 package mariposas.service;
 
-import jakarta.validation.Valid;
+import mariposas.model.InvalidMenteeModelInner;
 import mariposas.model.MenteesModelInner;
 import mariposas.model.MentorModelInner;
 import mariposas.model.ResponseModel;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface SponsorshipService {
 
-    List<MenteesModelInner> getMenteesList();
+    List<MenteesModelInner> getMenteesList(String email);
 
     ResponseModel sponsoringMentee(SponsorshipModel sponsorshipModel);
 
@@ -22,4 +22,5 @@ public interface SponsorshipService {
     SponsorshipNotificationModel sponsorshipNotification(String email);
 
     List<MenteesModelInner> getMentorMenteesList(String email);
+    ResponseModel invalidMentee(String email, List<InvalidMenteeModelInner> invalidMenteeModelInners);
 }

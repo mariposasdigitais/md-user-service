@@ -4,6 +4,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
 import jakarta.validation.Valid;
 import mariposas.exception.BaseException;
+import mariposas.model.InvalidMenteeModelInner;
 import mariposas.model.MenteesModelInner;
 import mariposas.model.MentorModelInner;
 import mariposas.model.ResponseModel;
@@ -49,7 +50,7 @@ public class SponsorshipController implements SponsorshipApi {
         }
 
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
-            return sponsorshipService.getMenteesList();
+            return sponsorshipService.getMenteesList(email);
         } else {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
@@ -78,6 +79,15 @@ public class SponsorshipController implements SponsorshipApi {
     }
 
     @Override
+    public ResponseModel invalidMentee(String token, String email, List<@Valid InvalidMenteeModelInner> invalidMenteeModelInners) {
+        if (jwtService.validate(token, email) && jwtService.isValid(token)) {
+            return sponsorshipService.invalidMentee(email, invalidMenteeModelInners);
+        } else {
+            throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
+        }
+    }
+
+    @Override
     public ResponseModel sponsoringMentee(String token, SponsorshipModel sponsorshipModel) {
         if (!userService.isMentor(sponsorshipModel.getEmailMentor())) {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
@@ -89,6 +99,7 @@ public class SponsorshipController implements SponsorshipApi {
             throw new BaseException(HttpStatus.UNPROCESSABLE_ENTITY, LOGIN_FAIL);
         }
     }
+
     @Override
     public SponsorshipNotificationModel sponsorshipNotification(String token, String email) {
         if (jwtService.validate(token, email) && jwtService.isValid(token)) {
